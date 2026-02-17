@@ -9,10 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     
-    <!-- إضافة manifest للتطبيق (للاختصار على الشاشة الرئيسية) مع تحديث الرابط -->
-    <link rel="manifest" href="https://yasminnmain44-design.github.io/Management/manifest.json">
-    
-    <!-- نسخة احتياطية من manifest في حال عدم توفر الملف -->
+    <!-- إضافة manifest للتطبيق -->
     <link rel="manifest" href="data:application/manifest+json,{
       &quot;name&quot;: &quot;نظام إدارة الحضور والغياب&quot;,
       &quot;short_name&quot;: &quot;الحضور&quot;,
@@ -34,7 +31,7 @@
       ]
     }">
     
-    <!-- أيقونة احتياطية SVG في حال عدم توفر الأيقونات -->
+    <!-- أيقونة احتياطية SVG -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%233498db'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3E👤%3C/text%3E%3C/svg%3E" type="image/svg+xml">
     
     <style>
@@ -1529,7 +1526,7 @@
         }
     </style>
     
-    <!-- تسجيل service worker مع الرابط المحدث -->
+    <!-- تسجيل service worker -->
     <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -2678,7 +2675,7 @@
                 </div>
             </div>
 
-            <!-- إدارة المسؤولين (مع زر إنشاء كلمة سر عشوائية) -->
+            <!-- إدارة المسؤولين -->
             <div id="supervisors" class="tab-content">
                 <div class="card">
                     <div class="card-header">إضافة مسؤول جديد</div>
@@ -4060,7 +4057,7 @@
             });
         }
 
-        // تحديث لوحة التحكم (مع إظهار الموظفين في إجازة)
+        // تحديث لوحة التحكم - تعديل دالة updateDashboard
         function updateDashboard() {
             const currentMonth = new Date().toISOString().slice(0, 7);
             const today = new Date().toISOString().split('T')[0];
@@ -4070,16 +4067,23 @@
             const activeEmployees = employees.filter(emp => emp.active);
             document.getElementById('totalEmployees').textContent = activeEmployees.length;
             
-            // الحضور اليوم حسب المحطة المختارة (يشمل الحاضرين والمجازين)
+            // الحضور اليوم حسب المحطة المختارة - عرض جميع سجلات اليوم فقط
             let todayAttendanceRecords = attendance.filter(record => {
+                // التأكد من أن التاريخ هو اليوم فقط
                 if (record.date === today && (record.status === 'حاضر' || record.status === 'إجازة')) {
                     const employee = employees.find(emp => emp.name === record.employeeName && emp.active);
-                    if (employee && (!selectedStation || record.stationName === selectedStation)) {
+                    if (employee) {
+                        // إذا تم اختيار محطة محددة، نعرض سجلات تلك المحطة فقط
+                        if (selectedStation) {
+                            return record.stationName === selectedStation;
+                        }
+                        // إذا لم يتم اختيار محطة (جميع المحطات)، نعرض جميع السجلات
                         return true;
                     }
                 }
                 return false;
             });
+            
             document.getElementById('todayAttendance').textContent = todayAttendanceRecords.length;
             
             // عدد المحطات
@@ -4113,31 +4117,49 @@
                 return;
             }
             
+            // تجميع حسب المحطة لعرضها بشكل منظم
+            const attendanceByStation = {};
             todayAttendanceRecords.forEach(record => {
-                const item = document.createElement('div');
-                item.className = 'list-item';
-                
-                // تحديد كلاس الحالة
-                let statusClass = '';
-                if (record.status === 'حاضر') statusClass = 'status-present';
-                else if (record.status === 'إجازة') statusClass = 'status-leave';
-                
-                item.innerHTML = `
-                    <div class="item-info">
-                        <div class="item-title">${record.employeeName}</div>
-                        <div class="item-subtitle">
-                            <span class="station-badge">${record.stationName || 'غير محدد'}</span>
-                        </div>
-                        <div class="item-subtitle">
-                            <span>المسؤول: ${record.supervisorName || 'غير محدد'}</span>
-                        </div>
-                    </div>
-                    <div class="${statusClass}">
-                        ${record.status === 'حاضر' ? '✅ حاضر' : record.status === 'إجازة' ? '🌴 إجازة' : record.status}
-                    </div>
-                `;
-                todayList.appendChild(item);
+                const station = record.stationName || 'غير محدد';
+                if (!attendanceByStation[station]) {
+                    attendanceByStation[station] = [];
+                }
+                attendanceByStation[station].push(record);
             });
+            
+            // عرض السجلات مرتبة حسب المحطة
+            for (const station in attendanceByStation) {
+                const stationRecords = attendanceByStation[station];
+                
+                // إضافة عنوان المحطة
+                const stationHeader = document.createElement('div');
+                stationHeader.style.cssText = 'font-weight: bold; margin: 10px 0 5px; color: var(--primary);';
+                stationHeader.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${station}`;
+                todayList.appendChild(stationHeader);
+                
+                stationRecords.forEach(record => {
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    
+                    // تحديد كلاس الحالة
+                    let statusClass = '';
+                    if (record.status === 'حاضر') statusClass = 'status-present';
+                    else if (record.status === 'إجازة') statusClass = 'status-leave';
+                    
+                    item.innerHTML = `
+                        <div class="item-info">
+                            <div class="item-title">${record.employeeName}</div>
+                            <div class="item-subtitle">
+                                <span>المسؤول: ${record.supervisorName || 'غير محدد'}</span>
+                            </div>
+                        </div>
+                        <div class="${statusClass}">
+                            ${record.status === 'حاضر' ? '✅ حاضر' : record.status === 'إجازة' ? '🌴 إجازة' : record.status}
+                        </div>
+                    `;
+                    todayList.appendChild(item);
+                });
+            }
         }
 
         // ==================== تحديث قوائم الموظفين ====================
