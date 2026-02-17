@@ -9,10 +9,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     
-    <!-- إضافة manifest للتطبيق (للاختصار على الشاشة الرئيسية) مع تحديث الرابط -->
-    <link rel="manifest" href="https://yasminnmain44-design.github.io/Management/manifest.json">
-    
-    <!-- نسخة احتياطية من manifest في حال عدم توفر الملف -->
+    <!-- إضافة manifest للتطبيق -->
     <link rel="manifest" href="data:application/manifest+json,{
       &quot;name&quot;: &quot;نظام إدارة الحضور والغياب&quot;,
       &quot;short_name&quot;: &quot;الحضور&quot;,
@@ -34,7 +31,7 @@
       ]
     }">
     
-    <!-- أيقونة احتياطية SVG في حال عدم توفر الأيقونات -->
+    <!-- أيقونة احتياطية SVG -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%233498db'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3E👤%3C/text%3E%3C/svg%3E" type="image/svg+xml">
     
     <style>
@@ -1529,7 +1526,7 @@
         }
     </style>
     
-    <!-- تسجيل service worker مع الرابط المحدث -->
+    <!-- تسجيل service worker -->
     <script>
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', function() {
@@ -2678,7 +2675,7 @@
                 </div>
             </div>
 
-            <!-- إدارة المسؤولين (مع زر إنشاء كلمة سر عشوائية) -->
+            <!-- إدارة المسؤولين -->
             <div id="supervisors" class="tab-content">
                 <div class="card">
                     <div class="card-header">إضافة مسؤول جديد</div>
@@ -3596,7 +3593,7 @@
                 supervisors.forEach(sup => {
                     if (sup.active) {
                         const option = document.createElement('option');
-                        option.value = sup.id;
+                        option.value = sup.employeeId;
                         option.textContent = sup.employeeName;
                         dropdown.appendChild(option);
                     }
@@ -3857,7 +3854,7 @@
                 return;
             }
             
-            const supervisor = supervisors.find(sup => sup.id === supervisorId);
+            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
             
             const newFault = {
                 stationName,
@@ -4060,7 +4057,7 @@
             });
         }
 
-        // تحديث لوحة التحكم (مع إظهار الموظفين في إجازة)
+        // تحديث لوحة التحكم - تعديل دالة updateDashboard
         function updateDashboard() {
             const currentMonth = new Date().toISOString().slice(0, 7);
             const today = new Date().toISOString().split('T')[0];
@@ -4070,16 +4067,23 @@
             const activeEmployees = employees.filter(emp => emp.active);
             document.getElementById('totalEmployees').textContent = activeEmployees.length;
             
-            // الحضور اليوم حسب المحطة المختارة (يشمل الحاضرين والمجازين)
+            // الحضور اليوم حسب المحطة المختارة - عرض جميع سجلات اليوم فقط
             let todayAttendanceRecords = attendance.filter(record => {
+                // التأكد من أن التاريخ هو اليوم فقط
                 if (record.date === today && (record.status === 'حاضر' || record.status === 'إجازة')) {
                     const employee = employees.find(emp => emp.name === record.employeeName && emp.active);
-                    if (employee && (!selectedStation || record.stationName === selectedStation)) {
+                    if (employee) {
+                        // إذا تم اختيار محطة محددة، نعرض سجلات تلك المحطة فقط
+                        if (selectedStation) {
+                            return record.stationName === selectedStation;
+                        }
+                        // إذا لم يتم اختيار محطة (جميع المحطات)، نعرض جميع السجلات
                         return true;
                     }
                 }
                 return false;
             });
+            
             document.getElementById('todayAttendance').textContent = todayAttendanceRecords.length;
             
             // عدد المحطات
@@ -4113,35 +4117,49 @@
                 return;
             }
             
+            // تجميع حسب المحطة لعرضها بشكل منظم
+            const attendanceByStation = {};
             todayAttendanceRecords.forEach(record => {
-                const item = document.createElement('div');
-                item.className = 'list-item';
-                
-                // تحديد كلاس الحالة
-                let statusClass = '';
-                if (record.status === 'حاضر') statusClass = 'status-present';
-                else if (record.status === 'إجازة') statusClass = 'status-leave';
-                
-                // البحث عن اسم المسؤول
-                const supervisor = supervisors.find(sup => sup.id === record.supervisorId);
-                const supervisorName = supervisor ? supervisor.employeeName : (record.supervisorName || 'غير محدد');
-                
-                item.innerHTML = `
-                    <div class="item-info">
-                        <div class="item-title">${record.employeeName}</div>
-                        <div class="item-subtitle">
-                            <span class="station-badge">${record.stationName || 'غير محدد'}</span>
-                        </div>
-                        <div class="item-subtitle">
-                            <span>المسؤول: ${supervisorName}</span>
-                        </div>
-                    </div>
-                    <div class="${statusClass}">
-                        ${record.status === 'حاضر' ? '✅ حاضر' : record.status === 'إجازة' ? '🌴 إجازة' : record.status}
-                    </div>
-                `;
-                todayList.appendChild(item);
+                const station = record.stationName || 'غير محدد';
+                if (!attendanceByStation[station]) {
+                    attendanceByStation[station] = [];
+                }
+                attendanceByStation[station].push(record);
             });
+            
+            // عرض السجلات مرتبة حسب المحطة
+            for (const station in attendanceByStation) {
+                const stationRecords = attendanceByStation[station];
+                
+                // إضافة عنوان المحطة
+                const stationHeader = document.createElement('div');
+                stationHeader.style.cssText = 'font-weight: bold; margin: 10px 0 5px; color: var(--primary);';
+                stationHeader.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${station}`;
+                todayList.appendChild(stationHeader);
+                
+                stationRecords.forEach(record => {
+                    const item = document.createElement('div');
+                    item.className = 'list-item';
+                    
+                    // تحديد كلاس الحالة
+                    let statusClass = '';
+                    if (record.status === 'حاضر') statusClass = 'status-present';
+                    else if (record.status === 'إجازة') statusClass = 'status-leave';
+                    
+                    item.innerHTML = `
+                        <div class="item-info">
+                            <div class="item-title">${record.employeeName}</div>
+                            <div class="item-subtitle">
+                                <span>المسؤول: ${record.supervisorName || 'غير محدد'}</span>
+                            </div>
+                        </div>
+                        <div class="${statusClass}">
+                            ${record.status === 'حاضر' ? '✅ حاضر' : record.status === 'إجازة' ? '🌴 إجازة' : record.status}
+                        </div>
+                    `;
+                    todayList.appendChild(item);
+                });
+            }
         }
 
         // ==================== تحديث قوائم الموظفين ====================
@@ -4214,10 +4232,6 @@
                 const endDateObj = new Date(leave.end);
                 const duration = Math.ceil((endDateObj - startDateObj) / (1000 * 60 * 60 * 24)) + 1;
                 
-                // البحث عن اسم المسؤول
-                const supervisor = supervisors.find(sup => sup.id === leave.supervisorId);
-                const supervisorName = supervisor ? supervisor.employeeName : (leave.supervisorName || 'غير محدد');
-                
                 const item = document.createElement('div');
                 item.className = 'list-item';
                 item.innerHTML = `
@@ -4229,7 +4243,7 @@
                         </div>
                         <div class="item-subtitle">
                             <span>${leave.start} إلى ${leave.end}</span>
-                            <span>المسؤول: ${supervisorName}</span>
+                            <span>المسؤول: ${leave.supervisorName || 'غير محدد'}</span>
                         </div>
                     </div>
                     <div class="item-actions">
@@ -4506,10 +4520,7 @@
                 if (attendanceRecord) {
                     status = attendanceRecord.status;
                     stationName = attendanceRecord.stationName || 'غير محدد';
-                    
-                    // البحث عن اسم المسؤول
-                    const supervisor = supervisors.find(sup => sup.id === attendanceRecord.supervisorId);
-                    supervisorName = supervisor ? supervisor.employeeName : (attendanceRecord.supervisorName || 'غير محدد');
+                    supervisorName = attendanceRecord.supervisorName || 'غير محدد';
                     
                     if (status === 'حاضر') statusClass = 'status-present';
                     else if (status === 'غائب') statusClass = 'status-absent';
@@ -4610,10 +4621,7 @@
                 if (attendanceRecord) {
                     status = attendanceRecord.status;
                     stationName = attendanceRecord.stationName || 'غير محدد';
-                    
-                    // البحث عن اسم المسؤول
-                    const supervisor = supervisors.find(sup => sup.id === attendanceRecord.supervisorId);
-                    supervisorName = supervisor ? supervisor.employeeName : (attendanceRecord.supervisorName || 'غير محدد');
+                    supervisorName = attendanceRecord.supervisorName || 'غير محدد';
                     
                     // البحث عن إجازة لهذا اليوم
                     const leaveRecord = currentReportData.leaves.find(l => {
@@ -4695,7 +4703,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 return;
             }
             
-            const supervisor = supervisors.find(sup => sup.id === supervisorId);
+            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
             
             const existingRecord = attendance.find(record => 
                 record.employeeName === employeeName && record.date === date
@@ -4882,7 +4890,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 return;
             }
             
-            const supervisor = supervisors.find(sup => sup.id === supervisorId);
+            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
             
             const newLeave = {
                 employeeName,
@@ -4929,7 +4937,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 return;
             }
             
-            const supervisor = supervisors.find(sup => sup.id === supervisorId);
+            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
             
             const newFinancial = {
                 employeeName,
@@ -4995,10 +5003,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
             
             filteredFinancials.forEach(financial => {
-                // البحث عن اسم المسؤول
-                const supervisor = supervisors.find(sup => sup.id === financial.supervisorId);
-                const supervisorName = supervisor ? supervisor.employeeName : (financial.supervisorName || 'غير محدد');
-                
                 const item = document.createElement('div');
                 item.className = 'list-item';
                 item.innerHTML = `
@@ -5010,7 +5014,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                         </div>
                         <div class="item-subtitle">
                             <span>${financial.date}</span>
-                            <span>المسؤول: ${supervisorName}</span>
+                            <span>المسؤول: ${financial.supervisorName || 'غير محدد'}</span>
                         </div>
                     </div>
                     <div class="item-actions">
@@ -5061,7 +5065,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 }
             }
             
-            const supervisor = supervisors.find(sup => sup.id === supervisorId);
+            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
             
             const newTransaction = {
                 type: transactionType,
@@ -5150,10 +5154,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 const amountSign = transaction.transactionType === 'deposit' ? '+' : 
                                   transaction.transactionType === 'withdrawal' ? '-' : '↔';
                 
-                // البحث عن اسم المسؤول
-                const supervisor = supervisors.find(sup => sup.id === transaction.supervisorId);
-                const supervisorName = supervisor ? supervisor.employeeName : (transaction.supervisorName || 'غير محدد');
-                
                 let details = '';
                 if (transaction.transactionType === 'deposit') {
                     details = `فئة: ${transaction.category}`;
@@ -5169,7 +5169,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                         <div class="item-title">${transaction.type}</div>
                         <div class="item-subtitle">${transaction.date}</div>
                         <div class="item-subtitle">${details}</div>
-                        <div class="item-subtitle">المسؤول: ${supervisorName}</div>
+                        <div class="item-subtitle">المسؤول: ${transaction.supervisorName || 'غير محدد'}</div>
                         <div class="item-subtitle">${transaction.notes || 'لا توجد ملاحظات'}</div>
                     </div>
                     <div class="${amountClass}">
@@ -6793,19 +6793,13 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 filteredAttendance = filteredAttendance.filter(record => record.stationName === stationFilter);
             }
             
-            const data = filteredAttendance.map(record => {
-                // البحث عن اسم المسؤول
-                const supervisor = supervisors.find(sup => sup.id === record.supervisorId);
-                const supervisorName = supervisor ? supervisor.employeeName : (record.supervisorName || 'غير محدد');
-                
-                return {
-                    'اسم الموظف': record.employeeName,
-                    'المحطة': record.stationName || 'غير محدد',
-                    'المسؤول': supervisorName,
-                    'التاريخ': record.date,
-                    'الحالة': record.status
-                };
-            });
+            const data = filteredAttendance.map(record => ({
+                'اسم الموظف': record.employeeName,
+                'المحطة': record.stationName || 'غير محدد',
+                'المسؤول': record.supervisorName || 'غير محدد',
+                'التاريخ': record.date,
+                'الحالة': record.status
+            }));
             
             exportToExcel(data, 'سجل_الحضور');
         }
@@ -6817,14 +6811,10 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 const endDate = new Date(leave.end);
                 const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
                 
-                // البحث عن اسم المسؤول
-                const supervisor = supervisors.find(sup => sup.id === leave.supervisorId);
-                const supervisorName = supervisor ? supervisor.employeeName : (leave.supervisorName || 'غير محدد');
-                
                 return {
                     'اسم الموظف': leave.employeeName,
                     'المحطة': leave.stationName || 'غير محدد',
-                    'المسؤول': supervisorName,
+                    'المسؤول': leave.supervisorName || 'غير محدد',
                     'نوع الإجازة': leave.type,
                     'تاريخ البدء': leave.start,
                     'تاريخ الانتهاء': leave.end,
@@ -6865,21 +6855,15 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 );
             }
             
-            const data = filteredFinancials.map(financial => {
-                // البحث عن اسم المسؤول
-                const supervisor = supervisors.find(sup => sup.id === financial.supervisorId);
-                const supervisorName = supervisor ? supervisor.employeeName : (financial.supervisorName || 'غير محدد');
-                
-                return {
-                    'اسم الموظف': financial.employeeName,
-                    'المحطة': financial.stationName || 'غير محدد',
-                    'المسؤول': supervisorName,
-                    'النوع': financial.type,
-                    'المبلغ (ج.م)': financial.amount,
-                    'التاريخ': financial.date,
-                    'ملاحظات': financial.notes
-                };
-            });
+            const data = filteredFinancials.map(financial => ({
+                'اسم الموظف': financial.employeeName,
+                'المحطة': financial.stationName || 'غير محدد',
+                'المسؤول': financial.supervisorName || 'غير محدد',
+                'النوع': financial.type,
+                'المبلغ (ج.م)': financial.amount,
+                'التاريخ': financial.date,
+                'ملاحظات': financial.notes
+            }));
             
             exportToExcel(data, 'الحركات_المالية');
         }
@@ -6968,15 +6952,11 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             }
             
             const data = filteredTransactions.map(transaction => {
-                // البحث عن اسم المسؤول
-                const supervisor = supervisors.find(sup => sup.id === transaction.supervisorId);
-                const supervisorName = supervisor ? supervisor.employeeName : (transaction.supervisorName || 'غير محدد');
-                
                 const baseData = {
                     'النوع': transaction.type,
                     'المبلغ (ج.م)': transaction.amount,
                     'التاريخ': transaction.date,
-                    'المسؤول': supervisorName,
+                    'المسؤول': transaction.supervisorName || 'غير محدد',
                     'نوع الحركة': transaction.transactionType === 'deposit' ? 'إيداع' : 'صرف',
                     'ملاحظات': transaction.notes || 'لا توجد ملاحظات'
                 };
