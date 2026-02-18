@@ -2862,7 +2862,7 @@
                                 <label for="selectiveDataType">اختر نوع البيانات المراد حذفها</label>
                                 <select id="selectiveDataType" required>
                                     <option value="attendance">سجلات الحضور</option>
-                                    <option value="leaves">سجلات الإجازات</option>
+                                    <!-- <option value="leaves">سجلات الإجازات</option> --> <!-- تم إلغاء هذا الخيار بناءً على طلبك -->
                                     <option value="financials">الحركات المالية</option>
                                     <option value="cashTransactions">حركات العهدة</option>
                                     <option value="faults">سجل الأعطال</option>
@@ -4889,6 +4889,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
 
+        // تم تعديل هذه الدالة لإضافة حقل timestamp
         function addFinancial() {
             showLoadingState(true);
             
@@ -4916,7 +4917,9 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 type,
                 amount,
                 date,
-                notes
+                notes,
+                // إضافة حقل timestamp ليتوافق مع البيانات القادمة من تطبيق المسؤول
+                timestamp: new Date().toISOString()
             };
             
             addData('financials', newFinancial)
@@ -6667,6 +6670,7 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             }
         }
 
+        // تم تعديل هذه الدالة لإزالة خيار leaves
         function deleteSelectiveData() {
             const dataType = document.getElementById('selectiveDataType').value;
             const startDate = document.getElementById('selectiveStartDate').value;
@@ -6688,10 +6692,7 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                     dataArray = attendance;
                     dataTypeName = 'سجلات الحضور';
                     break;
-                case 'leaves':
-                    dataArray = leaves;
-                    dataTypeName = 'سجلات الإجازات';
-                    break;
+                /* تم إزالة حالة 'leaves' بناءً على طلبك */
                 case 'financials':
                     dataArray = financials;
                     dataTypeName = 'الحركات المالية';
