@@ -9,7 +9,8 @@
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
     
-    <!-- إضافة manifest للتطبيق -->
+    <link rel="manifest" href="https://yasminnmain44-design.github.io/Management/manifest.json">
+    
     <link rel="manifest" href="data:application/manifest+json,{
       &quot;name&quot;: &quot;نظام إدارة الحضور والغياب&quot;,
       &quot;short_name&quot;: &quot;الحضور&quot;,
@@ -31,7 +32,6 @@
       ]
     }">
     
-    <!-- أيقونة احتياطية SVG -->
     <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%233498db'/%3E%3Ctext x='50' y='70' font-size='50' text-anchor='middle' fill='white' font-family='Arial'%3E👤%3C/text%3E%3C/svg%3E" type="image/svg+xml">
     
     <style>
@@ -71,7 +71,6 @@
             position: relative;
         }
 
-        /* الهيدر */
         .app-header {
             background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
             color: white;
@@ -112,7 +111,6 @@
             cursor: pointer;
         }
 
-        /* القائمة الجانبية */
         .side-menu {
             position: fixed;
             top: 0;
@@ -197,7 +195,6 @@
             display: block;
         }
 
-        /* شريط التنقل السفلي */
         .bottom-nav {
             position: fixed;
             bottom: 0;
@@ -237,16 +234,14 @@
             margin-bottom: 4px;
         }
 
-        /* المحتوى الرئيسي */
         .main-content {
             padding: 15px;
             padding-bottom: 70px;
         }
 
-        /* البطاقات الإحصائية */
         .stats-container {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             margin-bottom: 15px;
         }
@@ -279,7 +274,6 @@
             line-height: 1.2;
         }
 
-        /* البطاقات */
         .card {
             background: white;
             border-radius: 12px;
@@ -303,7 +297,6 @@
             padding: 15px;
         }
 
-        /* النماذج */
         .form-group {
             margin-bottom: 15px;
         }
@@ -398,7 +391,6 @@
             background: #d35400;
         }
 
-        /* الجداول */
         .table-container {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
@@ -440,7 +432,6 @@
             width: 100%;
         }
 
-        /* التبويبات */
         .tabs {
             display: flex;
             border-bottom: 1px solid #ddd;
@@ -470,7 +461,6 @@
             display: block;
         }
 
-        /* قائمة العناصر */
         .list-item {
             display: flex;
             justify-content: space-between;
@@ -548,10 +538,9 @@
             font-weight: bold;
         }
 
-        /* أزرار الوصول السريع */
         .quick-actions {
             display: grid;
-            grid-template-columns: repeat(3, 1fr);
+            grid-template-columns: repeat(4, 1fr);
             gap: 8px;
             margin-bottom: 15px;
         }
@@ -598,7 +587,6 @@
             opacity: 1;
         }
 
-        /* أزرار الإجراءات */
         .btn-edit {
             background: var(--warning);
         }
@@ -631,7 +619,6 @@
             background: #7f8c8d;
         }
 
-        /* زر إرسال رسالة الواتساب */
         .btn-whatsapp {
             background: #25D366;
         }
@@ -640,7 +627,6 @@
             background: #128C7E;
         }
 
-        /* زر الاتصال */
         .btn-call {
             background: #3498db;
         }
@@ -649,7 +635,6 @@
             background: #2980b9;
         }
 
-        /* تحسينات للشاشات الصغيرة جداً */
         @media (max-width: 360px) {
             .stats-container {
                 grid-template-columns: repeat(2, 1fr);
@@ -686,7 +671,6 @@
             }
         }
 
-        /* تحسينات للشاشات المتوسطة */
         @media (min-width: 768px) {
             .app-container {
                 max-width: 500px;
@@ -702,7 +686,6 @@
             }
         }
 
-        /* زر النسخ الاحتياطي */
         .backup-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -726,7 +709,6 @@
             font-style: italic;
         }
 
-        /* حالة الموظف */
         .employee-status {
             display: inline-block;
             padding: 4px 8px;
@@ -745,7 +727,6 @@
             color: #7f8c8d;
         }
 
-        /* صفحة قاعدة بيانات الموظفين */
         .employee-details-card {
             background: white;
             border-radius: 12px;
@@ -791,7 +772,6 @@
             color: #333;
         }
 
-        /* أزرار الإجراءات في قاعدة البيانات */
         .employee-actions {
             display: flex;
             flex-wrap: wrap;
@@ -807,7 +787,6 @@
             white-space: nowrap;
         }
 
-        /* شريط التنقل السفلي المعدل */
         .nav-item-attendance {
             background-color: var(--success);
             color: white;
@@ -830,12 +809,10 @@
             display: none;
         }
 
-        /* إضافة موظف جديد في قاعدة البيانات */
         .add-employee-db {
             margin-bottom: 20px;
         }
 
-        /* إضافة مؤشر التحميل */
         .loading {
             display: inline-block;
             width: 20px;
@@ -871,7 +848,6 @@
             color: white;
         }
         
-        /* تحسينات لصفحة العهدة */
         .cash-tabs {
             display: flex;
             border-bottom: 1px solid #ddd;
@@ -944,7 +920,6 @@
             display: none;
         }
 
-        /* إضافة أنماط جديدة لخاصية الاستيراد */
         .import-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -1036,7 +1011,6 @@
             margin-bottom: 5px;
         }
 
-        /* أنماط جديدة لاستيراد جهات الاتصال */
         .contacts-import-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -1104,7 +1078,6 @@
             width: auto;
         }
 
-        /* أنماط محسنة لصفحة سجل الموظفين */
         .employee-report-section {
             margin-top: 20px;
             padding-top: 20px;
@@ -1276,7 +1249,6 @@
             font-weight: bold;
         }
         
-        /* فلتر التاريخ الجديد */
         .date-range-filter {
             display: flex;
             gap: 10px;
@@ -1302,7 +1274,6 @@
             height: 46px;
         }
         
-        /* زر تصدير في صفحة السجلات */
         .export-report-btn {
             width: auto;
             padding: 8px 15px;
@@ -1310,7 +1281,6 @@
             margin-left: 10px;
         }
 
-        /* تحسينات إضافية لصفحة السجلات */
         .report-controls {
             background: #f8f9fa;
             padding: 20px;
@@ -1416,7 +1386,6 @@
             font-size: 0.9rem;
         }
 
-        /* أنماط جديدة للمحطات والأعطال */
         .station-badge {
             display: inline-block;
             padding: 4px 8px;
@@ -1524,74 +1493,159 @@
             padding: 20px;
             color: var(--danger);
         }
+        
+        .attendance-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 15px;
+            border-bottom: 1px solid #eee;
+        }
+        .attendance-item:last-child {
+            border-bottom: none;
+        }
+        .attendance-employee-info {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+        .attendance-employee-name {
+            font-weight: 600;
+        }
+        .attendance-employee-details {
+            font-size: 0.8rem;
+            color: #555;
+            display: flex;
+            gap: 10px;
+        }
+        .attendance-supervisor {
+            color: #777;
+        }
+        .attendance-status-badge {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 5px;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+            min-width: 60px;
+        }
+        .status-present-badge {
+            background-color: rgba(39, 174, 96, 0.1);
+            color: var(--success);
+        }
+        .status-leave-badge {
+            background-color: rgba(243, 156, 18, 0.1);
+            color: var(--warning);
+        }
+        .filter-with-button {
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+        }
+        .filter-with-button .form-group {
+            flex: 1;
+            margin-bottom: 0;
+        }
+        .filter-with-button button {
+            width: auto;
+            padding: 14px 20px;
+            height: 52px;
+            white-space: nowrap;
+        }
+        .station-group {
+            margin-bottom: 20px;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .station-group-header {
+            background-color: var(--primary);
+            color: white;
+            padding: 12px 15px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .station-group-body {
+            padding: 5px 0;
+        }
+        .station-group-body .attendance-item {
+            padding: 10px 20px;
+        }
+        .station-group-body .attendance-item:last-child {
+            border-bottom: none;
+        }
+        .station-employee-count {
+            background-color: rgba(255,255,255,0.2);
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+        }
     </style>
     
-    <!-- تسجيل service worker -->
     <script>
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function() {
-        // محاولة تسجيل service worker من الرابط المحدد
-        navigator.serviceWorker.register('https://yasminnmain44-design.github.io/Management/service-worker.js')
-          .then(function(registration) {
-            console.log('ServiceWorker registered successfully with scope: ', registration.scope);
-          })
-          .catch(function(error) {
-            console.log('ServiceWorker registration failed: ', error);
-            // إذا فشل التسجيل، نقوم بإنشاء service worker ديناميكي
-            registerDynamicServiceWorker();
-          });
-      });
-    }
-    
-    function registerDynamicServiceWorker() {
-      const swCode = `
-        const CACHE_NAME = 'attendance-cache-v1';
-        const urlsToCache = [
-          'https://yasminnmain44-design.github.io/Management/',
-          'https://yasminnmain44-design.github.io/Management/index.html',
-          'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
-          'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
-          'https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js',
-          'https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js'
-        ];
+        // Service Worker
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('https://yasminnmain44-design.github.io/Management/service-worker.js')
+                    .catch(function(error) {
+                        console.log('ServiceWorker registration failed: ', error);
+                        registerDynamicServiceWorker();
+                    });
+            });
+        }
+        
+        function registerDynamicServiceWorker() {
+            const swCode = `
+                const CACHE_NAME = 'attendance-cache-v1';
+                const urlsToCache = [
+                    'https://yasminnmain44-design.github.io/Management/',
+                    'https://yasminnmain44-design.github.io/Management/index.html',
+                    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css',
+                    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+                    'https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js',
+                    'https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js'
+                ];
 
-        self.addEventListener('install', function(event) {
-          event.waitUntil(
-            caches.open(CACHE_NAME)
-              .then(function(cache) {
-                console.log('Opened cache');
-                return cache.addAll(urlsToCache);
-              })
-          );
-        });
+                self.addEventListener('install', function(event) {
+                    event.waitUntil(
+                        caches.open(CACHE_NAME)
+                            .then(function(cache) {
+                                console.log('Opened cache');
+                                return cache.addAll(urlsToCache);
+                            })
+                    );
+                });
 
-        self.addEventListener('fetch', function(event) {
-          event.respondWith(
-            caches.match(event.request)
-              .then(function(response) {
-                if (response) {
-                  return response;
-                }
-                return fetch(event.request);
-              })
-          );
-        });
-      `;
-      
-      const blob = new Blob([swCode], { type: 'application/javascript' });
-      const url = URL.createObjectURL(blob);
-      
-      navigator.serviceWorker.register(url).then(function(registration) {
-        console.log('Dynamic ServiceWorker registered successfully');
-      }).catch(function(error) {
-        console.log('Dynamic ServiceWorker registration failed: ', error);
-      });
-    }
+                self.addEventListener('fetch', function(event) {
+                    event.respondWith(
+                        caches.match(event.request)
+                            .then(function(response) {
+                                if (response) {
+                                    return response;
+                                }
+                                return fetch(event.request);
+                            })
+                    );
+                });
+            `;
+            
+            const blob = new Blob([swCode], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            
+            navigator.serviceWorker.register(url).catch(function(error) {
+                console.log('Dynamic ServiceWorker registration failed: ', error);
+            });
+        }
     </script>
 </head>
 <body>
     <div class="app-container">
-        <!-- هيدر التطبيق -->
         <header class="app-header">
             <div class="header-top">
                 <div class="app-title" id="pageTitle">لوحة التحكم</div>
@@ -1606,12 +1660,10 @@
             </div>
         </header>
 
-        <!-- مؤشر حالة الاتصال -->
         <div id="connectionStatus" class="connection-status connection-online">
             <i class="fas fa-wifi"></i> متصل بقاعدة البيانات السحابية
         </div>
 
-        <!-- القائمة الجانبية -->
         <div class="side-menu" id="sideMenu">
             <div class="side-menu-header">
                 <div class="side-menu-title">القائمة الرئيسية</div>
@@ -1713,10 +1765,8 @@
             </ul>
         </div>
 
-        <!-- طبقة التعتيم -->
         <div class="overlay" id="overlay"></div>
 
-        <!-- المحتوى الرئيسي -->
         <main class="main-content">
             <!-- لوحة التحكم -->
             <div id="dashboard" class="tab-content active">
@@ -1734,8 +1784,12 @@
                         <div class="stat-value" id="totalStations">0</div>
                     </div>
                     <div class="stat-card">
+                        <div class="stat-title">إجمالي الخصومات</div>
+                        <div class="stat-value" id="totalDeductions">0</div>
+                    </div>
+                    <div class="stat-card">
                         <div class="stat-title">إجمالي المكافآت</div>
-                        <div class="stat-value" id="monthlyLeaves">0</div>
+                        <div class="stat-value" id="monthlyRewards">0</div>
                     </div>
                     <div class="stat-card">
                         <div class="stat-title">إجمالي السلف</div>
@@ -1745,28 +1799,40 @@
                         <div class="stat-title">الأعطال النشطة</div>
                         <div class="stat-value" id="activeFaults">0</div>
                     </div>
+                    <div class="stat-card">
+                        <div class="stat-title">موظفين قاعدة البيانات</div>
+                        <div class="stat-value" id="totalDbEmployees">0</div>
+                    </div>
                 </div>
 
                 <div class="quick-actions">
-                    <div class="quick-action" data-target="attendance">
-                        <i class="fas fa-user-check"></i>
-                        <span>تسجيل الحضور</span>
+                    <div class="quick-action" data-target="employee-database">
+                        <i class="fas fa-address-book"></i>
+                        <span>قاعدة بيانات الموظفين</span>
                     </div>
-                    <div class="quick-action" data-target="employees">
-                        <i class="fas fa-user-plus"></i>
-                        <span>إضافة موظف</span>
+                    <div class="quick-action" data-target="leaves">
+                        <i class="fas fa-umbrella-beach"></i>
+                        <span>إدارة الإجازات</span>
                     </div>
-                    <div class="quick-action" data-target="faults">
-                        <i class="fas fa-exclamation-triangle"></i>
-                        <span>تسجيل عطل</span>
+                    <div class="quick-action" data-target="employee-records">
+                        <i class="fas fa-user-circle"></i>
+                        <span>سجل الموظفين</span>
                     </div>
-                    <div class="quick-action" data-target="financial">
-                        <i class="fas fa-hand-holding-usd"></i>
-                        <span>سلفة/مكافأة</span>
+                    <div class="quick-action" data-target="reports">
+                        <i class="fas fa-chart-bar"></i>
+                        <span>التقارير</span>
                     </div>
-                    <div class="quick-action" data-target="stations">
-                        <i class="fas fa-building"></i>
-                        <span>المحطات</span>
+                    <div class="quick-action" data-target="supervisors">
+                        <i class="fas fa-user-tie"></i>
+                        <span>إدارة المسؤولين</span>
+                    </div>
+                    <div class="quick-action" data-target="settings">
+                        <i class="fas fa-cog"></i>
+                        <span>الإعدادات</span>
+                    </div>
+                    <div class="quick-action" data-target="backup">
+                        <i class="fas fa-database"></i>
+                        <span>النسخ الاحتياطي</span>
                     </div>
                     <div class="quick-action" data-target="cash">
                         <i class="fas fa-wallet"></i>
@@ -1841,16 +1907,13 @@
                             يجب إضافة الموظف أولاً في قاعدة البيانات قبل إضافته إلى الموظفين النشطين
                         </div>
                         
-                        <!-- قسم استيراد الموظفين النشطين من قاعدة البيانات -->
                         <div class="import-section">
                             <h3>استيراد موظفين من قاعدة البيانات</h3>
                             <p>يمكنك استيراد موظفين من قاعدة البيانات وإضافتهم كموظفين نشطين.</p>
                             
                             <div class="form-group">
                                 <label for="selectMultipleEmployees">اختر الموظفين للإضافة</label>
-                                <select id="selectMultipleEmployees" multiple style="height: 150px;">
-                                    <!-- سيتم ملؤها بالبيانات -->
-                                </select>
+                                <select id="selectMultipleEmployees" multiple style="height: 150px;"></select>
                             </div>
                             
                             <div class="form-group">
@@ -1917,7 +1980,6 @@
                             </button>
                         </form>
 
-                        <!-- قسم استيراد جهات الاتصال من الهاتف -->
                         <div class="contacts-import-section">
                             <h3>استيراد جهات الاتصال من الهاتف</h3>
                             <p>يمكنك استيراد جهات الاتصال من هاتفك مباشرة لتوفير الوقت والجهد.</p>
@@ -1945,9 +2007,7 @@
                                             <th>الحالة</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- سيتم ملؤها بالبيانات -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                                 
                                 <div class="contacts-import-actions" style="margin-top: 15px;">
@@ -1958,7 +2018,6 @@
                             </div>
                         </div>
 
-                        <!-- قسم استيراد الموظفين من ملف Excel أو CSV -->
                         <div class="import-section">
                             <h3>استيراد موظفين من ملف Excel أو CSV</h3>
                             <p>يمكنك استيراد قائمة بالموظفين من ملف Excel أو CSV لتوفير الوقت.</p>
@@ -2002,15 +2061,11 @@
                                             <th>العنوان</th>
                                         </tr>
                                     </thead>
-                                    <tbody>
-                                        <!-- سيتم ملؤها بالبيانات -->
-                                    </tbody>
+                                    <tbody></tbody>
                                 </table>
                             </div>
                             
-                            <div id="importStatus" class="import-status" style="display: none;">
-                                <!-- سيتم عرض حالة الاستيراد هنا -->
-                            </div>
+                            <div id="importStatus" class="import-status" style="display: none;"></div>
                         </div>
                     </div>
                 </div>
@@ -2235,9 +2290,7 @@
                     </div>
                 </div>
                 
-                <div id="employeeReportContainer" style="display: none;">
-                    <!-- سيتم ملء محتوى التقرير هنا بواسطة JavaScript -->
-                </div>
+                <div id="employeeReportContainer" style="display: none;"></div>
             </div>
 
             <!-- السلف والمكافآت -->
@@ -2305,6 +2358,12 @@
                                     <input type="month" id="filterFinancialMonth">
                                 </div>
                                 <div class="form-group">
+                                    <label for="filterFinancialEmployee">اسم الموظف</label>
+                                    <select id="filterFinancialEmployee">
+                                        <option value="">جميع الموظفين</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
                                     <label for="filterFinancialStation">اختر المحطة</label>
                                     <select id="filterFinancialStation">
                                         <option value="">جميع المحطات</option>
@@ -2318,6 +2377,11 @@
                                         <option value="مكافأة">مكافأة</option>
                                         <option value="خصم">خصم</option>
                                     </select>
+                                </div>
+                                <div class="filter-actions">
+                                    <button class="btn-success" id="applyFinancialFilter">
+                                        <i class="fas fa-filter"></i> تطبيق الفلتر
+                                    </button>
                                 </div>
                             </div>
                         </div>
@@ -2355,9 +2419,7 @@
                                         <th>التفاصيل</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <!-- سيتم ملؤها بالبيانات -->
-                                </tbody>
+                                <tbody></tbody>
                             </table>
                         </div>
                     </div>
@@ -2687,7 +2749,6 @@
                                     <option value="">اختر الموظف</option>
                                 </select>
                             </div>
-                            <!-- حقل كلمة السر مع زر إنشاء كلمة سر عشوائية -->
                             <div class="form-group">
                                 <label for="supervisorPassword">كلمة السر</label>
                                 <div style="display: flex; gap: 10px;">
@@ -2792,12 +2853,42 @@
                                 <i class="fas fa-trash"></i> حذف جميع البيانات
                             </button>
                         </div>
+                        
+                        <div class="backup-section">
+                            <h3>حذف البيانات بشكل انتقائي</h3>
+                            <p>يمكنك هنا حذف جزء محدد من البيانات (مثل سجلات الحضور) لفترة زمنية معينة دون التأثير على باقي النظام.</p>
+                            
+                            <div class="form-group">
+                                <label for="selectiveDataType">اختر نوع البيانات المراد حذفها</label>
+                                <select id="selectiveDataType" required>
+                                    <option value="attendance">سجلات الحضور</option>
+                                    <option value="leaves">سجلات الإجازات</option>
+                                    <option value="financials">الحركات المالية</option>
+                                    <option value="cashTransactions">حركات العهدة</option>
+                                    <option value="faults">سجل الأعطال</option>
+                                </select>
+                            </div>
+                            
+                            <div class="filter-row">
+                                <div class="form-group">
+                                    <label for="selectiveStartDate">من تاريخ</label>
+                                    <input type="date" id="selectiveStartDate" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="selectiveEndDate">إلى تاريخ</label>
+                                    <input type="date" id="selectiveEndDate" required>
+                                </div>
+                            </div>
+                            
+                            <button class="btn-danger" id="deleteSelectiveDataBtn">
+                                <i class="fas fa-trash-alt"></i> حذف البيانات المحددة
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
         </main>
 
-        <!-- شريط التنقل السفلي -->
         <nav class="bottom-nav">
             <a href="#" class="nav-item" data-target="dashboard">
                 <div class="nav-icon"><i class="fas fa-home"></i></div>
@@ -2823,7 +2914,6 @@
     </div>
 
     <script>
-        // تهيئة Firebase باستخدام بيانات مشروعك
         const firebaseConfig = {
             apiKey: "AIzaSyDjImFc52SF5TlN7k7vz0H6-8bWl8Pkz0k",
             authDomain: "haat-a88ee.firebaseapp.com",
@@ -2834,11 +2924,9 @@
             appId: "1:123456789012:web:abcdef1234567890"
         };
 
-        // تهيئة Firebase
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
 
-        // متغيرات البيانات
         let employees = [];
         let attendance = [];
         let leaves = [];
@@ -2848,29 +2936,18 @@
         let stations = [];
         let supervisors = [];
         let faults = [];
-        
-        // متغيرات التقرير الحالي
         let currentReportData = null;
-        
-        // حالة الاتصال
         let isConnected = false;
         let connectionRetryCount = 0;
         const maxRetries = 3;
         
-        // قائمة كلمات عربية لإنشاء كلمات سر عشوائية
         const arabicWords = [
             'قمة', 'بحر', 'نور', 'سحر', 'أمل', 'نجاح', 'تميز', 'ابداع', 'تفوق', 'ريادة',
             'سماء', 'قمر', 'شمس', 'ورد', 'عطر', 'لؤلؤ', 'مرجان', 'ياقوت', 'زمرد', 'فيروز',
             'صقر', 'نسر', 'أسد', 'نمر', 'فهد', 'غزال', 'يمامة', 'بلبل', 'عندليب', 'بومة',
-            'نخلة', 'زيتون', 'تفاح', 'برتقال', 'ليمون', 'مانجو', 'عنب', 'تين', 'رمان', 'فراولة',
-            'مكة', 'مدينة', 'قدس', 'دمشق', 'بغداد', 'قاهرة', 'رياض', 'جدة', 'دبي', 'مسقط',
-            'نيل', 'فرات', 'دجلة', 'بحر', 'وادي', 'جبل', 'سهل', 'صحراء', 'واحة', 'غابة',
-            'ذهب', 'فضة', 'نحاس', 'حديد', 'ألماس', 'ياقوت', 'زبرجد', 'عقيق', 'فيروزج', 'لازورد',
-            'صبر', 'حكمة', 'علم', 'معرفة', 'ثقافة', 'فكر', 'رأي', 'فكرة', 'هدف', 'غاية',
-            'سعادة', 'فرح', 'سرور', 'بهجة', 'مرح', 'ابتسامة', 'ضحكة', 'بسمة', 'هناء', 'رضا'
+            'نخلة', 'زيتون', 'تفاح', 'برتقال', 'ليمون', 'مانجو', 'عنب', 'تين', 'رمان', 'فراولة'
         ];
 
-        // عناصر DOM
         const sideMenu = document.getElementById('sideMenu');
         const overlay = document.getElementById('overlay');
         const menuBtn = document.getElementById('menuBtn');
@@ -2878,9 +2955,7 @@
         const exportBtn = document.getElementById('exportBtn');
         const connectionStatus = document.getElementById('connectionStatus');
 
-        // تهيئة التطبيق
         document.addEventListener('DOMContentLoaded', function() {
-            // تحديث التواريخ الافتراضية
             const today = new Date().toISOString().split('T')[0];
             document.getElementById('attendanceDate').value = today;
             document.getElementById('leaveStart').value = today;
@@ -2891,34 +2966,29 @@
             document.getElementById('faultDate').value = today;
             document.getElementById('selectMonthForReport').value = new Date().toISOString().slice(0, 7);
             
-            // تعيين الشهر الحالي
             const currentMonth = new Date().toISOString().slice(0, 7);
             document.getElementById('filterAttendanceMonth').value = currentMonth;
             document.getElementById('reportMonth').value = currentMonth;
             document.getElementById('filterCashMonth').value = currentMonth;
             document.getElementById('filterFinancialMonth').value = currentMonth;
             
-            // تعيين تاريخ الفلتر للإجازات
             document.getElementById('leaveFilterStartDate').value = today;
             document.getElementById('leaveFilterEndDate').value = today;
             document.getElementById('filterFaultStartDate').value = today;
             document.getElementById('filterFaultEndDate').value = today;
             
-            // إضافة مستمعي الأحداث
+            const firstDayOfMonth = new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString().split('T')[0];
+            document.getElementById('selectiveStartDate').value = firstDayOfMonth;
+            document.getElementById('selectiveEndDate').value = today;
+            
             setupEventListeners();
-            
-            // مراقبة حالة الاتصال
             monitorConnection();
-            
-            // محاولة تحميل البيانات من Firebase
             loadAllData();
             
-            // إخفاء نموذج إضافة موظف في البداية
             document.getElementById('employeeForm').classList.add('hidden');
             document.getElementById('employeeFormMessage').style.display = 'block';
         });
 
-        // مراقبة حالة الاتصال
         function monitorConnection() {
             const connectedRef = firebase.database().ref(".info/connected");
             connectedRef.on("value", function(snap) {
@@ -2929,7 +2999,6 @@
                     connectionStatus.className = "connection-status connection-online";
                     connectionStatus.style.display = "block";
                     
-                    // إذا كنا غير متصلين سابقاً، نعيد تحميل البيانات
                     if (!isConnected) {
                         loadAllData();
                     }
@@ -2939,7 +3008,6 @@
                     connectionStatus.className = "connection-status connection-offline";
                     connectionStatus.style.display = "block";
                     
-                    // محاولة إعادة الاتصال
                     if (connectionRetryCount < maxRetries) {
                         connectionRetryCount++;
                         setTimeout(() => {
@@ -2952,7 +3020,6 @@
             });
         }
 
-        // تحميل جميع البيانات من Firebase
         function loadAllData() {
             showLoadingState(true);
             
@@ -2998,12 +3065,10 @@
                 connectionStatus.className = "connection-status connection-offline";
                 connectionStatus.style.display = "block";
                 
-                // عرض رسالة خطأ للمستخدم
                 showErrorMessage('فشل الاتصال بقاعدة البيانات السحابية. يرجى التحقق من اتصال الإنترنت والمحاولة مرة أخرى.');
             });
         }
 
-        // تحميل بيانات من Firebase
         function loadData(dataType) {
             return new Promise((resolve, reject) => {
                 database.ref(dataType).once('value')
@@ -3011,12 +3076,10 @@
                         const data = snapshot.val();
                         
                         if (data) {
-                            // تحويل البيانات من كائن إلى مصفوفة
                             const dataArray = Object.keys(data).map(key => {
                                 return { id: key, ...data[key] };
                             });
                             
-                            // تحديث المتغيرات العالمية
                             if (dataType === 'employees') employees = dataArray;
                             else if (dataType === 'attendance') attendance = dataArray;
                             else if (dataType === 'leaves') leaves = dataArray;
@@ -3027,7 +3090,6 @@
                             else if (dataType === 'supervisors') supervisors = dataArray;
                             else if (dataType === 'faults') faults = dataArray;
                         } else {
-                            // إذا لم تكن هناك بيانات، نستخدم مصفوفة فارغة
                             if (dataType === 'employees') employees = [];
                             else if (dataType === 'attendance') attendance = [];
                             else if (dataType === 'leaves') leaves = [];
@@ -3048,7 +3110,6 @@
             });
         }
 
-        // حفظ البيانات في Firebase
         function saveData(dataType, data) {
             return new Promise((resolve, reject) => {
                 let dataToSave = {};
@@ -3078,7 +3139,6 @@
             });
         }
 
-        // إضافة عنصر جديد إلى Firebase
         function addData(dataType, newItem) {
             return new Promise((resolve, reject) => {
                 const newId = Date.now().toString() + Math.random().toString(36).substr(2, 5);
@@ -3086,7 +3146,6 @@
                 
                 database.ref(`${dataType}/${newId}`).set(newItem)
                     .then(() => {
-                        // تحديث المتغيرات المحلية
                         if (dataType === 'employees') employees.push(itemWithId);
                         else if (dataType === 'attendance') attendance.push(itemWithId);
                         else if (dataType === 'leaves') leaves.push(itemWithId);
@@ -3106,12 +3165,10 @@
             });
         }
 
-        // تحديث عنصر في Firebase
         function updateData(dataType, id, updatedData) {
             return new Promise((resolve, reject) => {
                 database.ref(`${dataType}/${id}`).update(updatedData)
                     .then(() => {
-                        // تحديث المتغيرات المحلية
                         let itemIndex;
                         if (dataType === 'employees') {
                             itemIndex = employees.findIndex(item => item.id === id);
@@ -3151,12 +3208,10 @@
             });
         }
 
-        // حذف عنصر من Firebase
         function deleteData(dataType, id) {
             return new Promise((resolve, reject) => {
                 database.ref(`${dataType}/${id}`).remove()
                     .then(() => {
-                        // تحديث المتغيرات المحلية
                         if (dataType === 'employees') employees = employees.filter(item => item.id !== id);
                         else if (dataType === 'attendance') attendance = attendance.filter(item => item.id !== id);
                         else if (dataType === 'leaves') leaves = leaves.filter(item => item.id !== id);
@@ -3176,7 +3231,6 @@
             });
         }
 
-        // عرض رسالة خطأ
         function showErrorMessage(message) {
             const errorDiv = document.createElement('div');
             errorDiv.className = 'error-container';
@@ -3193,7 +3247,6 @@
             mainContent.appendChild(errorDiv);
         }
 
-        // عرض حالة التحميل
         function showLoadingState(show) {
             const buttons = document.querySelectorAll('button[type="submit"]');
             
@@ -3206,7 +3259,6 @@
                     }
                 });
                 
-                // تحديث أزرار أخرى
                 const autoAttendanceBtn = document.getElementById('autoAttendanceBtn');
                 if (autoAttendanceBtn) {
                     autoAttendanceBtn.querySelector('span').innerHTML = '<div class="loading"></div> جاري التسجيل...';
@@ -3222,7 +3274,6 @@
                 buttons.forEach(button => {
                     const textSpan = button.querySelector('span');
                     if (textSpan) {
-                        // إعادة النص الأصلي بناءً على الزر
                         if (button.closest('#employeeForm')) textSpan.textContent = 'إضافة الموظف';
                         else if (button.closest('#employeeDatabaseForm')) textSpan.textContent = 'إضافة إلى قاعدة البيانات';
                         else if (button.closest('#manualAttendanceForm')) textSpan.textContent = 'تسجيل';
@@ -3237,7 +3288,6 @@
                     }
                 });
                 
-                // تحديث أزرار أخرى
                 const autoAttendanceBtn = document.getElementById('autoAttendanceBtn');
                 if (autoAttendanceBtn) {
                     autoAttendanceBtn.querySelector('span').textContent = 'تسجيل الحضور التلقائي';
@@ -3252,23 +3302,19 @@
             }
         }
 
-        // دالة إنشاء كلمة سر عشوائية
         function generateRandomPassword() {
             const word1 = arabicWords[Math.floor(Math.random() * arabicWords.length)];
             const word2 = arabicWords[Math.floor(Math.random() * arabicWords.length)];
-            const numbers = Math.floor(Math.random() * 900) + 100; // رقم عشوائي بين 100 و 999
+            const numbers = Math.floor(Math.random() * 900) + 100;
             
             return `${word1}_${word2}_${numbers}`;
         }
 
-        // إعداد مستمعي الأحداث
         function setupEventListeners() {
-            // فتح وإغلاق القائمة الجانبية
             menuBtn.addEventListener('click', toggleSideMenu);
             closeMenu.addEventListener('click', toggleSideMenu);
             overlay.addEventListener('click', toggleSideMenu);
             
-            // تصدير البيانات
             exportBtn.addEventListener('click', exportAllData);
             document.getElementById('exportEmployees').addEventListener('click', exportEmployeesToExcel);
             document.getElementById('exportEmployeeDatabase').addEventListener('click', exportEmployeeDatabaseToExcel);
@@ -3281,7 +3327,6 @@
             document.getElementById('exportStations').addEventListener('click', exportStationsToExcel);
             document.getElementById('exportSupervisors').addEventListener('click', exportSupervisorsToExcel);
             
-            // التنقل بين الصفحات
             document.querySelectorAll('.nav-item, .nav-item-attendance, .quick-action, .see-all, .menu-link').forEach(item => {
                 item.addEventListener('click', function(e) {
                     e.preventDefault();
@@ -3290,24 +3335,22 @@
                     if (target) {
                         showPage(target);
                         
-                        // تحديث القائمة النشطة
                         if (this.classList.contains('nav-item') || this.classList.contains('nav-item-attendance')) {
                             document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
                             document.querySelectorAll('.nav-item-attendance').forEach(nav => nav.classList.remove('active'));
                             this.classList.add('active');
                         }
                         
-                        // تحديث القائمة الجانبية
                         if (this.classList.contains('menu-link')) {
                             document.querySelectorAll('.menu-link').forEach(link => link.classList.remove('active'));
                             this.classList.add('active');
-                            toggleSideMenu(); // إغلاق القائمة بعد النقر
+                            toggleSideMenu();
+                            updateBottomNavFromSidebar(target);
                         }
                     }
                 });
             });
             
-            // إظهار نموذج إضافة موظف
             document.getElementById('showAddForm').addEventListener('click', function() {
                 const form = document.getElementById('employeeForm');
                 const message = document.getElementById('employeeFormMessage');
@@ -3323,101 +3366,82 @@
                 }
             });
             
-            // إضافة موظف
             document.getElementById('employeeForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 addEmployee();
             });
             
-            // التحقق من عدم تكرار اسم الموظف
             document.getElementById('empName').addEventListener('blur', function() {
                 checkEmployeeDuplicate(this.value, 'empNameError');
             });
             
-            // التحقق من عدم تكرار رقم الهاتف
             document.getElementById('empPhone').addEventListener('blur', function() {
                 checkPhoneDuplicate(this.value, 'empPhoneError');
             });
             
-            // إضافة موظف إلى قاعدة البيانات
             document.getElementById('employeeDatabaseForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 addEmployeeToDatabase();
             });
             
-            // التحقق من عدم تكرار اسم الموظف في قاعدة البيانات
             document.getElementById('dbEmpName').addEventListener('blur', function() {
                 checkEmployeeDatabaseDuplicate(this.value, 'dbEmpNameError');
             });
             
-            // التحقق من عدم تكرار رقم الهاتف في قاعدة البيانات
             document.getElementById('dbEmpPhone').addEventListener('blur', function() {
                 checkPhoneDatabaseDuplicate(this.value, 'dbEmpPhoneError');
             });
             
-            // تسجيل حضور يدوي
             document.getElementById('manualAttendanceForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 recordManualAttendance();
             });
             
-            // تسجيل إجازة
             document.getElementById('leaveForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 addLeave();
             });
             
-            // تسجيل حركة مالية
             document.getElementById('financialForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 addFinancial();
             });
             
-            // إنشاء تقرير المرتبات
             document.getElementById('generateReport').addEventListener('click', function() {
                 generateSalaryReport();
             });
             
-            // تصفية سجل الحضور
             document.getElementById('applyAttendanceFilter').addEventListener('click', function() {
                 displayAttendanceList();
             });
             
-            // البحث في قاعدة بيانات الموظفين
             document.getElementById('searchEmployee').addEventListener('input', function() {
                 displayEmployeeDatabase();
             });
             
-            // تسجيل الخروج
             document.getElementById('logoutBtn').addEventListener('click', function(e) {
                 e.preventDefault();
                 if (confirm('هل تريد حقًا تسجيل الخروج؟')) {
                     alert('تم تسجيل الخروج بنجاح');
-                    // يمكن إضافة إعادة توجيه لصفحة تسجيل الدخول هنا
                 }
             });
             
-            // تسجيل الحضور التلقائي
             document.getElementById('autoAttendanceBtn').addEventListener('click', function() {
                 recordAutoAttendance();
             });
             
-            // تبويبات العهدة
             document.querySelectorAll('.cash-tab[data-tab]').forEach(tab => {
                 tab.addEventListener('click', function() {
                     const tabId = this.getAttribute('data-tab');
                     
-                    // إزالة النشاط من جميع التبويبات والمحتويات
                     document.querySelectorAll('.cash-tab').forEach(t => t.classList.remove('active'));
                     document.querySelectorAll('.cash-tab-content').forEach(c => c.classList.remove('active'));
                     
-                    // إضافة النشاط للتبويب والمحتوى المحدد
                     this.classList.add('active');
                     document.getElementById(tabId).classList.add('active');
                 });
             });
             
-            // إيداع وصرف العهدة
             document.getElementById('depositForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 addCashTransaction('deposit');
@@ -3428,7 +3452,6 @@
                 addCashTransaction('withdrawal');
             });
             
-            // التحقق من صحة المبالغ في نماذج العهدة
             document.getElementById('depositAmount').addEventListener('blur', function() {
                 validateAmount(this.value, 'depositAmountError');
             });
@@ -3437,7 +3460,6 @@
                 validateAmount(this.value, 'withdrawalAmountError');
             });
             
-            // تصفية حركات العهدة
             document.getElementById('filterCashMonth').addEventListener('change', function() {
                 displayCashTransactions();
             });
@@ -3446,33 +3468,26 @@
                 displayCashTransactions();
             });
             
-            // تصفية الحركات المالية
-            document.getElementById('filterFinancialMonth').addEventListener('change', function() {
+            document.getElementById('applyFinancialFilter').addEventListener('click', function() {
                 displayFinancialsList();
             });
             
-            document.getElementById('filterFinancialType').addEventListener('change', function() {
-                displayFinancialsList();
-            });
-            
-            // النسخ الاحتياطي
             document.getElementById('downloadBackupBtn').addEventListener('click', downloadBackup);
             document.getElementById('restoreBackupBtn').addEventListener('click', restoreBackup);
             document.getElementById('deleteAllDataBtn').addEventListener('click', deleteAllData);
             
-            // إضافة مستمعي الأحداث للاستيراد من Excel و CSV
+            document.getElementById('deleteSelectiveDataBtn').addEventListener('click', deleteSelectiveData);
+            
             document.getElementById('downloadTemplateBtn').addEventListener('click', downloadTemplate);
             document.getElementById('previewImportBtn').addEventListener('click', previewImport);
             document.getElementById('importEmployeesBtn').addEventListener('click', importEmployees);
             document.getElementById('importFromDatabaseBtn').addEventListener('click', importFromDatabase);
             
-            // إضافة مستمعي الأحداث لاستيراد جهات الاتصال
             document.getElementById('importContactsBtn').addEventListener('click', importContacts);
             document.getElementById('selectAllContacts').addEventListener('click', selectAllContacts);
             document.getElementById('deselectAllContacts').addEventListener('click', deselectAllContacts);
             document.getElementById('addSelectedContactsBtn').addEventListener('click', addSelectedContacts);
             
-            // فلتر الإجازات حسب التاريخ
             document.getElementById('applyLeaveFilter').addEventListener('click', function() {
                 displayLeavesList();
             });
@@ -3485,16 +3500,13 @@
                 displayLeavesList();
             });
             
-            // صفحة سجل الموظفين
             document.getElementById('generateEmployeeReportBtn').addEventListener('click', generateEmployeeReport);
             
-            // إضافة محطة
             document.getElementById('stationForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 addStation();
             });
             
-            // إضافة مسؤول (مع زر إنشاء كلمة سر عشوائية)
             document.getElementById('generatePasswordBtn').addEventListener('click', function() {
                 const passwordField = document.getElementById('supervisorPassword');
                 passwordField.value = generateRandomPassword();
@@ -3505,13 +3517,11 @@
                 addSupervisor();
             });
             
-            // إضافة عطل
             document.getElementById('faultForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 addFault();
             });
             
-            // فلترة الأعطال
             document.getElementById('applyFaultFilter').addEventListener('click', function() {
                 displayFaultsList();
             });
@@ -3525,18 +3535,15 @@
                 displayFaultsList();
             });
             
-            // فلترة الحضور اليومي في لوحة التحكم
             document.getElementById('dashboardStationFilter').addEventListener('change', function() {
                 updateDashboard();
             });
             
-            // حفظ الإعدادات
             document.getElementById('saveSettingsBtn').addEventListener('click', function() {
                 alert('تم حفظ الإعدادات بنجاح');
             });
         }
 
-        // تحديث قوائم المحطات
         function updateStationDropdowns() {
             const dropdowns = [
                 'attendanceStation',
@@ -3563,7 +3570,6 @@
                     dropdown.appendChild(option);
                 });
                 
-                // إضافة خيار "جميع المحطات" للفلاتر
                 if (dropdownId.includes('filter') || dropdownId === 'dashboardStationFilter') {
                     const allOption = document.createElement('option');
                     allOption.value = '';
@@ -3573,7 +3579,6 @@
             });
         }
 
-        // تحديث قوائم المسؤولين
         function updateSupervisorDropdowns() {
             const dropdowns = [
                 'attendanceSupervisor',
@@ -3593,7 +3598,7 @@
                 supervisors.forEach(sup => {
                     if (sup.active) {
                         const option = document.createElement('option');
-                        option.value = sup.employeeId;
+                        option.value = sup.id;
                         option.textContent = sup.employeeName;
                         dropdown.appendChild(option);
                     }
@@ -3601,7 +3606,6 @@
             });
         }
 
-        // إضافة محطة جديدة
         function addStation() {
             showLoadingState(true);
             
@@ -3629,7 +3633,6 @@
             addData('stations', newStation)
                 .then(() => {
                     document.getElementById('stationForm').reset();
-                    
                     showLoadingState(false);
                     alert('تم إضافة المحطة بنجاح');
                     loadAllData();
@@ -3640,7 +3643,6 @@
                 });
         }
 
-        // عرض قائمة المحطات
         function displayStationsList() {
             const container = document.getElementById('stationsList');
             container.innerHTML = '';
@@ -3674,7 +3676,6 @@
             });
         }
 
-        // حذف محطة
         function deleteStation(id) {
             if (confirm('هل أنت متأكد من حذف هذه المحطة؟')) {
                 deleteData('stations', id)
@@ -3688,7 +3689,6 @@
             }
         }
 
-        // تعديل محطة
         function editStation(id) {
             const station = stations.find(s => s.id === id);
             if (!station) return;
@@ -3710,7 +3710,6 @@
                 });
         }
 
-        // إضافة مسؤول جديد (مع كلمة السر)
         function addSupervisor() {
             showLoadingState(true);
             
@@ -3750,7 +3749,7 @@
                 employeeId: employee.id,
                 employeeName: employee.name,
                 employeePhone: employee.phone,
-                password: password, // حفظ كلمة السر
+                password: password,
                 active: active,
                 createdAt: new Date().toISOString()
             };
@@ -3770,7 +3769,6 @@
                 });
         }
 
-        // عرض قائمة المسؤولين (مع إظهار كلمة السر)
         function displaySupervisorsList() {
             const container = document.getElementById('supervisorsList');
             container.innerHTML = '';
@@ -3791,7 +3789,7 @@
                     <div class="item-info">
                         <div class="item-title">${sup.employeeName}</div>
                         <div class="item-subtitle">${sup.employeePhone}</div>
-                        <div class="item-subtitle">كلمة السر: ${sup.password}</div> <!-- عرض كلمة السر -->
+                        <div class="item-subtitle">كلمة السر: ${sup.password}</div>
                         <div class="employee-status ${statusClass}">${statusText}</div>
                     </div>
                     <div class="item-actions">
@@ -3803,7 +3801,6 @@
             });
         }
 
-        // حذف مسؤول
         function deleteSupervisor(id) {
             if (confirm('هل أنت متأكد من حذف هذا المسؤول؟')) {
                 deleteData('supervisors', id)
@@ -3817,13 +3814,12 @@
             }
         }
 
-        // تعديل مسؤول
         function editSupervisor(id) {
             const sup = supervisors.find(s => s.id === id);
             if (!sup) return;
             
             document.getElementById('supervisorEmployee').value = sup.employeeId;
-            document.getElementById('supervisorPassword').value = sup.password; // عرض كلمة السر المحفوظة
+            document.getElementById('supervisorPassword').value = sup.password;
             document.getElementById('supervisorActive').value = sup.active.toString();
             
             deleteData('supervisors', id)
@@ -3837,7 +3833,6 @@
                 });
         }
 
-        // إضافة عطل جديد
         function addFault() {
             showLoadingState(true);
             
@@ -3854,7 +3849,7 @@
                 return;
             }
             
-            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
+            const supervisor = supervisors.find(sup => sup.id === supervisorId);
             
             const newFault = {
                 stationName,
@@ -3882,7 +3877,6 @@
                 });
         }
 
-        // عرض قائمة الأعطال
         function displayFaultsList() {
             const container = document.getElementById('faultsList');
             container.innerHTML = '';
@@ -3955,7 +3949,6 @@
             });
         }
 
-        // حذف عطل
         function deleteFault(id) {
             if (confirm('هل أنت متأكد من حذف هذا العطل؟')) {
                 deleteData('faults', id)
@@ -3969,7 +3962,6 @@
             }
         }
 
-        // تعديل عطل
         function editFault(id) {
             const fault = faults.find(f => f.id === id);
             if (!fault) return;
@@ -3992,7 +3984,6 @@
                 });
         }
 
-        // تصدير الأعطال إلى Excel
         function exportFaultsToExcel() {
             const data = faults.map(fault => {
                 let statusText = '';
@@ -4013,7 +4004,6 @@
             exportToExcel(data, 'سجل_الأعطال');
         }
 
-        // تصدير المحطات إلى Excel
         function exportStationsToExcel() {
             const data = stations.map(station => ({
                 'اسم المحطة': station.name,
@@ -4026,12 +4016,11 @@
             exportToExcel(data, 'قائمة_المحطات');
         }
 
-        // تصدير المسؤولين إلى Excel (مع كلمة السر)
         function exportSupervisorsToExcel() {
             const data = supervisors.map(sup => ({
                 'اسم المسؤول': sup.employeeName,
                 'رقم الهاتف': sup.employeePhone,
-                'كلمة السر': sup.password, // تصدير كلمة السر
+                'كلمة السر': sup.password,
                 'الحالة': sup.active ? 'فعال' : 'غير فعال',
                 'تاريخ الإضافة': sup.createdAt ? new Date(sup.createdAt).toLocaleDateString('ar-EG') : ''
             }));
@@ -4039,7 +4028,6 @@
             exportToExcel(data, 'قائمة_المسؤولين');
         }
 
-        // تحديث قائمة الموظفين في اختيار المسؤولين
         function updateSupervisorEmployeesDropdown() {
             const dropdown = document.getElementById('supervisorEmployee');
             if (!dropdown) return;
@@ -4057,58 +4045,49 @@
             });
         }
 
-        // تحديث لوحة التحكم - تعديل دالة updateDashboard
         function updateDashboard() {
             const currentMonth = new Date().toISOString().slice(0, 7);
             const today = new Date().toISOString().split('T')[0];
             const selectedStation = document.getElementById('dashboardStationFilter').value;
             
-            // إجمالي الموظفين النشطين
             const activeEmployees = employees.filter(emp => emp.active);
             document.getElementById('totalEmployees').textContent = activeEmployees.length;
             
-            // الحضور اليوم حسب المحطة المختارة - عرض جميع سجلات اليوم فقط
             let todayAttendanceRecords = attendance.filter(record => {
-                // التأكد من أن التاريخ هو اليوم فقط
                 if (record.date === today && (record.status === 'حاضر' || record.status === 'إجازة')) {
                     const employee = employees.find(emp => emp.name === record.employeeName && emp.active);
-                    if (employee) {
-                        // إذا تم اختيار محطة محددة، نعرض سجلات تلك المحطة فقط
-                        if (selectedStation) {
-                            return record.stationName === selectedStation;
-                        }
-                        // إذا لم يتم اختيار محطة (جميع المحطات)، نعرض جميع السجلات
+                    if (employee && (!selectedStation || record.stationName === selectedStation)) {
                         return true;
                     }
                 }
                 return false;
             });
-            
             document.getElementById('todayAttendance').textContent = todayAttendanceRecords.length;
             
-            // عدد المحطات
             document.getElementById('totalStations').textContent = stations.length;
             
-            // إجمالي المكافآت للشهر الحالي
+            const totalDeductions = financials
+                .filter(f => f.type === 'خصم' && f.date.startsWith(currentMonth))
+                .reduce((sum, f) => sum + f.amount, 0);
+            document.getElementById('totalDeductions').textContent = totalDeductions + ' ج.م';
+            
             const totalRewards = financials
                 .filter(f => f.type === 'مكافأة' && f.date.startsWith(currentMonth))
                 .reduce((sum, f) => sum + f.amount, 0);
-            document.getElementById('monthlyLeaves').textContent = totalRewards + ' ج.م';
+            document.getElementById('monthlyRewards').textContent = totalRewards + ' ج.م';
             
-            // إجمالي السلف للشهر الحالي
             const totalLoans = financials
                 .filter(f => f.type === 'سلفة' && f.date.startsWith(currentMonth))
                 .reduce((sum, f) => sum + f.amount, 0);
             document.getElementById('totalLoans').textContent = totalLoans + ' ج.م';
             
-            // الأعطال النشطة (لم يتم الإصلاح أو جاري الإصلاح)
             const activeFaults = faults.filter(f => f.status !== 'fixed').length;
             document.getElementById('activeFaults').textContent = activeFaults;
             
-            // تحديث إحصائيات العهدة
+            document.getElementById('totalDbEmployees').textContent = employeeDatabase.length;
+            
             updateCashStats();
             
-            // تحديث قائمة الحضور اليومي
             const todayList = document.getElementById('todayAttendanceList');
             todayList.innerHTML = '';
             
@@ -4117,58 +4096,86 @@
                 return;
             }
             
-            // تجميع حسب المحطة لعرضها بشكل منظم
-            const attendanceByStation = {};
+            const recordsByStation = {};
             todayAttendanceRecords.forEach(record => {
-                const station = record.stationName || 'غير محدد';
-                if (!attendanceByStation[station]) {
-                    attendanceByStation[station] = [];
+                const station = record.stationName || 'محطة غير محددة';
+                if (!recordsByStation[station]) {
+                    recordsByStation[station] = [];
                 }
-                attendanceByStation[station].push(record);
+                recordsByStation[station].push(record);
             });
             
-            // عرض السجلات مرتبة حسب المحطة
-            for (const station in attendanceByStation) {
-                const stationRecords = attendanceByStation[station];
+            for (const [stationName, records] of Object.entries(recordsByStation)) {
+                const stationGroup = document.createElement('div');
+                stationGroup.className = 'station-group';
                 
-                // إضافة عنوان المحطة
-                const stationHeader = document.createElement('div');
-                stationHeader.style.cssText = 'font-weight: bold; margin: 10px 0 5px; color: var(--primary);';
-                stationHeader.innerHTML = `<i class="fas fa-map-marker-alt"></i> ${station}`;
-                todayList.appendChild(stationHeader);
+                stationGroup.innerHTML = `
+                    <div class="station-group-header">
+                        <span>${stationName}</span>
+                        <span class="station-employee-count">عدد الموظفين: ${records.length}</span>
+                    </div>
+                    <div class="station-group-body" id="station-group-${stationName.replace(/\s+/g, '-')}"></div>
+                `;
+                todayList.appendChild(stationGroup);
                 
-                stationRecords.forEach(record => {
-                    const item = document.createElement('div');
-                    item.className = 'list-item';
+                const groupBody = stationGroup.querySelector('.station-group-body');
+                
+                records.forEach(record => {
+                    const supervisor = supervisors.find(sup => sup.id === record.supervisorId);
+                    const supervisorName = supervisor ? supervisor.employeeName : (record.supervisorName || 'غير محدد');
                     
-                    // تحديد كلاس الحالة
-                    let statusClass = '';
-                    if (record.status === 'حاضر') statusClass = 'status-present';
-                    else if (record.status === 'إجازة') statusClass = 'status-leave';
+                    const item = document.createElement('div');
+                    item.className = 'attendance-item';
+                    
+                    let statusBadgeClass = '';
+                    let statusIcon = '';
+                    if (record.status === 'حاضر') {
+                        statusBadgeClass = 'status-present-badge';
+                        statusIcon = '✅ حاضر';
+                    } else if (record.status === 'إجازة') {
+                        statusBadgeClass = 'status-leave-badge';
+                        statusIcon = '🌴 إجازة';
+                    }
                     
                     item.innerHTML = `
-                        <div class="item-info">
-                            <div class="item-title">${record.employeeName}</div>
-                            <div class="item-subtitle">
-                                <span>المسؤول: ${record.supervisorName || 'غير محدد'}</span>
+                        <div class="attendance-employee-info">
+                            <div class="attendance-employee-name">${record.employeeName}</div>
+                            <div class="attendance-employee-details">
+                                <span>المسؤول: ${supervisorName}</span>
                             </div>
                         </div>
-                        <div class="${statusClass}">
-                            ${record.status === 'حاضر' ? '✅ حاضر' : record.status === 'إجازة' ? '🌴 إجازة' : record.status}
+                        <div class="attendance-status-badge ${statusBadgeClass}">
+                            ${statusIcon}
                         </div>
                     `;
-                    todayList.appendChild(item);
+                    groupBody.appendChild(item);
                 });
             }
         }
 
-        // ==================== تحديث قوائم الموظفين ====================
+        function updateBottomNavFromSidebar(targetPage) {
+            document.querySelectorAll('.nav-item, .nav-item-attendance').forEach(nav => nav.classList.remove('active'));
+            
+            if (targetPage === 'dashboard') {
+                document.querySelector('.nav-item[data-target="dashboard"]').classList.add('active');
+            } else if (targetPage === 'employees') {
+                document.querySelector('.nav-item[data-target="employees"]').classList.add('active');
+            } else if (targetPage === 'attendance') {
+                document.querySelector('.nav-item-attendance[data-target="attendance"]').classList.add('active');
+            } else if (targetPage === 'faults') {
+                document.querySelector('.nav-item[data-target="faults"]').classList.add('active');
+            } else if (targetPage === 'stations') {
+                document.querySelector('.nav-item[data-target="stations"]').classList.add('active');
+            }
+        }
+
         function updateEmployeesDropdowns() {
             const dropdowns = [
                 'attendanceEmployee',
                 'leaveEmployee',
                 'financialEmployee',
-                'selectEmployeeForReport'
+                'selectEmployeeForReport',
+                'filterFinancialEmployee'
             ];
             
             dropdowns.forEach(dropdownId => {
@@ -4188,7 +4195,6 @@
             });
         }
 
-        // ==================== فلتر الإجازات حسب التاريخ ====================
         function displayLeavesList() {
             const container = document.getElementById('leavesList');
             container.innerHTML = '';
@@ -4207,14 +4213,12 @@
                 return;
             }
             
-            // فلترة الإجازات حسب النطاق الزمني والمحطة
             let filteredLeaves = leaves.filter(leave => {
                 const leaveStart = new Date(leave.start);
                 const leaveEnd = new Date(leave.end);
                 const filterStart = new Date(startDate);
                 const filterEnd = new Date(endDate);
                 
-                // تحقق إذا كان هناك تداخل بين فترتي الإجازة والفلتر
                 const dateMatch = (leaveStart <= filterEnd && leaveEnd >= filterStart);
                 const stationMatch = !stationFilter || leave.stationName === stationFilter;
                 
@@ -4227,10 +4231,12 @@
             }
             
             filteredLeaves.forEach(leave => {
-                // حساب مدة الإجازة
                 const startDateObj = new Date(leave.start);
                 const endDateObj = new Date(leave.end);
                 const duration = Math.ceil((endDateObj - startDateObj) / (1000 * 60 * 60 * 24)) + 1;
+                
+                const supervisor = supervisors.find(sup => sup.id === leave.supervisorId);
+                const supervisorName = supervisor ? supervisor.employeeName : (leave.supervisorName || 'غير محدد');
                 
                 const item = document.createElement('div');
                 item.className = 'list-item';
@@ -4243,7 +4249,7 @@
                         </div>
                         <div class="item-subtitle">
                             <span>${leave.start} إلى ${leave.end}</span>
-                            <span>المسؤول: ${leave.supervisorName || 'غير محدد'}</span>
+                            <span>المسؤول: ${supervisorName}</span>
                         </div>
                     </div>
                     <div class="item-actions">
@@ -4255,7 +4261,6 @@
             });
         }
 
-        // ==================== صفحة سجل الموظفين المحسنة ====================
         function generateEmployeeReport() {
             const employeeName = document.getElementById('selectEmployeeForReport').value;
             const month = document.getElementById('selectMonthForReport').value;
@@ -4271,13 +4276,10 @@
                 return;
             }
             
-            // تحضير البيانات
             const reportData = prepareEmployeeMonthlyReport(employee, month);
             
-            // حفظ بيانات التقرير للتصدير
             currentReportData = reportData;
             
-            // عرض التقرير
             displayEmployeeReport(reportData, employee, month);
         }
 
@@ -4302,7 +4304,6 @@
                 }
             };
             
-            // جمع بيانات الحضور لهذا الشهر
             const monthAttendance = attendance.filter(record => 
                 record.employeeName === employee.name && 
                 record.date.startsWith(month)
@@ -4310,12 +4311,10 @@
             
             reportData.attendance = monthAttendance;
             
-            // حساب إحصائيات الحضور
             reportData.summary.totalPresent = monthAttendance.filter(a => a.status === 'حاضر').length;
             reportData.summary.totalAbsent = monthAttendance.filter(a => a.status === 'غائب').length;
             reportData.summary.totalLeaves = monthAttendance.filter(a => a.status === 'إجازة').length;
             
-            // جمع بيانات الإجازات لهذا الشهر
             const monthLeaves = leaves.filter(leave => 
                 leave.employeeName === employee.name && 
                 leave.start.startsWith(month)
@@ -4323,7 +4322,6 @@
             
             reportData.leaves = monthLeaves;
             
-            // جمع بيانات الحركات المالية لهذا الشهر
             const monthFinancials = financials.filter(f => 
                 f.employeeName === employee.name && 
                 f.date.startsWith(month)
@@ -4331,7 +4329,6 @@
             
             reportData.financials = monthFinancials;
             
-            // حساب إحصائيات الحركات المالية
             reportData.summary.totalRewards = monthFinancials
                 .filter(f => f.type === 'مكافأة')
                 .reduce((sum, f) => sum + f.amount, 0);
@@ -4344,7 +4341,6 @@
                 .filter(f => f.type === 'خصم')
                 .reduce((sum, f) => sum + f.amount, 0);
             
-            // حساب الراتب
             const dailyRate = employee.salary / 30;
             let netSalary = 0;
             let extraDays = 0;
@@ -4366,7 +4362,6 @@
                 netSalary = baseSalary;
             }
             
-            // إضافة المكافآت وطرح السلف والخصومات
             netSalary = netSalary + reportData.summary.totalRewards - 
                         reportData.summary.totalLoans - reportData.summary.totalDeductions;
             
@@ -4381,14 +4376,12 @@
         function displayEmployeeReport(reportData, employee, month) {
             const container = document.getElementById('employeeReportContainer');
             
-            // إنشاء هيكل التقرير المحسن
             container.innerHTML = `
                 <div class="employee-report-card">
                     <div class="employee-report-header">
                         <i class="fas fa-user"></i> تقرير ${employee.name} - ${month}
                     </div>
                     <div class="employee-report-body">
-                        <!-- معلومات أساسية -->
                         <div class="report-info-grid">
                             <div class="report-info-item">
                                 <span class="report-info-label">الوظيفة</span>
@@ -4408,7 +4401,6 @@
                             </div>
                         </div>
                         
-                        <!-- إحصائيات الحضور -->
                         <div class="attendance-stats">
                             <div class="attendance-stat present">
                                 <div class="attendance-stat-value">${reportData.summary.totalPresent}</div>
@@ -4424,7 +4416,6 @@
                             </div>
                         </div>
                         
-                        <!-- التفاصيل اليومية -->
                         <div class="daily-report-table">
                             <h4 style="padding: 15px; margin: 0; background: #f8f9fa; border-bottom: 2px solid var(--primary);">
                                 <i class="fas fa-calendar-alt"></i> التفاصيل اليومية
@@ -4440,13 +4431,10 @@
                                         <th>ملاحظات</th>
                                     </tr>
                                 </thead>
-                                <tbody id="dailyDetailsBody">
-                                    <!-- سيتم ملؤها بالبيانات -->
-                                </tbody>
+                                <tbody id="dailyDetailsBody"></tbody>
                             </table>
                         </div>
                         
-                        <!-- ملخص الراتب -->
                         <div class="salary-summary">
                             <h4><i class="fas fa-chart-pie"></i> ملخص الراتب الشهري</h4>
                             <div class="salary-breakdown">
@@ -4482,7 +4470,6 @@
                             </div>
                         </div>
                         
-                        <!-- أزرار الإجراءات -->
                         <div style="display: flex; gap: 10px; margin-top: 20px;">
                             <button class="btn-success" onclick="exportEmployeeReportToExcel()" style="flex: 1;">
                                 <i class="fas fa-download"></i> تصدير التقرير
@@ -4495,11 +4482,9 @@
                 </div>
             `;
             
-            // عرض التفاصيل اليومية
             const dailyBody = document.getElementById('dailyDetailsBody');
             dailyBody.innerHTML = '';
             
-            // إنشاء أيام الشهر
             const [year, monthNum] = month.split('-').map(Number);
             const daysInMonth = new Date(year, monthNum, 0).getDate();
             const arabicDays = ['الأحد', 'الإثنين', 'الثلاثاء', 'الأربعاء', 'الخميس', 'الجمعة', 'السبت'];
@@ -4509,7 +4494,6 @@
                 const dateObj = new Date(dateStr);
                 const dayName = arabicDays[dateObj.getDay()];
                 
-                // البحث عن سجل الحضور لهذا اليوم
                 const attendanceRecord = reportData.attendance.find(a => a.date === dateStr);
                 let status = 'لم يتم التسجيل';
                 let statusClass = '';
@@ -4520,13 +4504,14 @@
                 if (attendanceRecord) {
                     status = attendanceRecord.status;
                     stationName = attendanceRecord.stationName || 'غير محدد';
-                    supervisorName = attendanceRecord.supervisorName || 'غير محدد';
+                    
+                    const supervisor = supervisors.find(sup => sup.id === attendanceRecord.supervisorId);
+                    supervisorName = supervisor ? supervisor.employeeName : (attendanceRecord.supervisorName || 'غير محدد');
                     
                     if (status === 'حاضر') statusClass = 'status-present';
                     else if (status === 'غائب') statusClass = 'status-absent';
                     else if (status === 'إجازة') statusClass = 'status-leave';
                     
-                    // البحث عن إجازة لهذا اليوم
                     const leaveRecord = reportData.leaves.find(l => {
                         const startDate = new Date(l.start);
                         const endDate = new Date(l.end);
@@ -4554,14 +4539,11 @@
                 dailyBody.appendChild(row);
             }
             
-            // إظهار الحاوية
             container.style.display = 'block';
             
-            // تمرير إلى التقرير
             container.scrollIntoView({ behavior: 'smooth' });
         }
 
-        // تصدير تقرير الموظف إلى Excel
         function exportEmployeeReportToExcel() {
             if (!currentReportData) {
                 alert('لا توجد بيانات للتصدير. يرجى إنشاء التقرير أولاً.');
@@ -4572,16 +4554,13 @@
             const month = currentReportData.month;
             const summary = currentReportData.summary;
             
-            // تحضير بيانات التصدير
             const exportData = [];
             
-            // إضافة معلومات الموظف
             exportData.push(['تقرير الموظف الشهري', '', '', '', '', '']);
             exportData.push(['اسم الموظف', employeeName, '', '', '', '']);
             exportData.push(['الشهر', month, '', '', '', '']);
             exportData.push(['', '', '', '', '', '']);
             
-            // إضافة تفاصيل الراتب
             exportData.push(['تفاصيل الراتب', '', '', '', '', '']);
             exportData.push(['الراتب الأساسي', `${summary.baseSalary.toFixed(2)} ج.م`, '', '', '', '']);
             exportData.push(['أيام الحضور', `${summary.totalPresent} يوم`, '', '', '', '']);
@@ -4598,7 +4577,6 @@
             
             exportData.push(['', '', '', '', '', '']);
             
-            // إضافة التفاصيل اليومية
             exportData.push(['التفاصيل اليومية', '', '', '', '', '']);
             exportData.push(['اليوم', 'التاريخ', 'المحطة', 'المسؤول', 'الحالة', 'ملاحظات']);
             
@@ -4611,7 +4589,6 @@
                 const dateObj = new Date(dateStr);
                 const dayName = arabicDays[dateObj.getDay()];
                 
-                // البحث عن سجل الحضور لهذا اليوم
                 const attendanceRecord = currentReportData.attendance.find(a => a.date === dateStr);
                 let status = 'لم يتم التسجيل';
                 let stationName = '';
@@ -4621,9 +4598,10 @@
                 if (attendanceRecord) {
                     status = attendanceRecord.status;
                     stationName = attendanceRecord.stationName || 'غير محدد';
-                    supervisorName = attendanceRecord.supervisorName || 'غير محدد';
                     
-                    // البحث عن إجازة لهذا اليوم
+                    const supervisor = supervisors.find(sup => sup.id === attendanceRecord.supervisorId);
+                    supervisorName = supervisor ? supervisor.employeeName : (attendanceRecord.supervisorName || 'غير محدد');
+                    
                     const leaveRecord = currentReportData.leaves.find(l => {
                         const startDate = new Date(l.start);
                         const endDate = new Date(l.end);
@@ -4642,19 +4620,16 @@
                 exportData.push([dayName, dateStr, stationName, supervisorName, status, notes]);
             }
             
-            // إنشاء ورقة العمل
             const worksheet = XLSX.utils.aoa_to_sheet(exportData);
             const workbook = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(workbook, worksheet, "تقرير الموظف");
             
-            // حفظ الملف
             const fileName = `تقرير_${employeeName}_${month}.xlsx`;
             XLSX.writeFile(workbook, fileName);
             
             alert(`تم تصدير التقرير بنجاح باسم: ${fileName}`);
         }
 
-        // إرسال تقرير الموظف عبر واتساب
         function sendEmployeeReportWhatsApp() {
             if (!currentReportData) {
                 alert('لا توجد بيانات للإرسال. يرجى إنشاء التقرير أولاً.');
@@ -4687,7 +4662,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             window.open(whatsappUrl, '_blank');
         }
 
-        // تسجيل حضور يدوي
         function recordManualAttendance() {
             showLoadingState(true);
             
@@ -4703,7 +4677,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 return;
             }
             
-            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
+            const supervisor = supervisors.find(sup => sup.id === supervisorId);
             
             const existingRecord = attendance.find(record => 
                 record.employeeName === employeeName && record.date === date
@@ -4742,7 +4716,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
 
-        // تسجيل حضور تلقائي
         function recordAutoAttendance() {
             showLoadingState(true);
             
@@ -4803,7 +4776,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
 
-        // عرض سجل الحضور
         function displayAttendanceList() {
             const container = document.getElementById('attendanceList');
             container.innerHTML = '';
@@ -4829,7 +4801,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 return;
             }
             
-            // تجميع حسب الموظف
             const employeeStats = {};
             
             filteredAttendance.forEach(record => {
@@ -4872,7 +4843,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
 
-        // إضافة إجازة
         function addLeave() {
             showLoadingState(true);
             
@@ -4890,7 +4860,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 return;
             }
             
-            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
+            const supervisor = supervisors.find(sup => sup.id === supervisorId);
             
             const newLeave = {
                 employeeName,
@@ -4919,7 +4889,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
 
-        // إضافة حركة مالية
         function addFinancial() {
             showLoadingState(true);
             
@@ -4937,7 +4906,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 return;
             }
             
-            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
+            const supervisor = supervisors.find(sup => sup.id === supervisorId);
             
             const newFinancial = {
                 employeeName,
@@ -4965,13 +4934,14 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
 
-        // عرض الحركات المالية
         function displayFinancialsList() {
             const container = document.getElementById('financialList');
             container.innerHTML = '';
             
             const month = document.getElementById('filterFinancialMonth') ? 
                          document.getElementById('filterFinancialMonth').value : '';
+            const employeeFilter = document.getElementById('filterFinancialEmployee') ? 
+                              document.getElementById('filterFinancialEmployee').value : '';
             const stationFilter = document.getElementById('filterFinancialStation') ? 
                               document.getElementById('filterFinancialStation').value : '';
             const typeFilter = document.getElementById('filterFinancialType') ? 
@@ -4982,6 +4952,12 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             if (month) {
                 filteredFinancials = filteredFinancials.filter(financial => 
                     financial.date.startsWith(month)
+                );
+            }
+            
+            if (employeeFilter) {
+                filteredFinancials = filteredFinancials.filter(financial => 
+                    financial.employeeName === employeeFilter
                 );
             }
             
@@ -5003,6 +4979,9 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
             
             filteredFinancials.forEach(financial => {
+                const supervisor = supervisors.find(sup => sup.id === financial.supervisorId);
+                const supervisorName = supervisor ? supervisor.employeeName : (financial.supervisorName || 'غير محدد');
+                
                 const item = document.createElement('div');
                 item.className = 'list-item';
                 item.innerHTML = `
@@ -5014,7 +4993,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                         </div>
                         <div class="item-subtitle">
                             <span>${financial.date}</span>
-                            <span>المسؤول: ${financial.supervisorName || 'غير محدد'}</span>
+                            <span>المسؤول: ${supervisorName}</span>
                         </div>
                     </div>
                     <div class="item-actions">
@@ -5026,7 +5005,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             });
         }
 
-        // إضافة حركة للعهدة
         function addCashTransaction(type) {
             showLoadingState(true);
             
@@ -5065,7 +5043,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 }
             }
             
-            const supervisor = supervisors.find(sup => sup.employeeId === supervisorId);
+            const supervisor = supervisors.find(sup => sup.id === supervisorId);
             
             const newTransaction = {
                 type: transactionType,
@@ -5104,7 +5082,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
 
-        // حساب رصيد العهدة الحالي
         function calculateCurrentCashBalance() {
             let balance = 0;
             
@@ -5119,7 +5096,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             return balance;
         }
 
-        // عرض حركات العهدة
         function displayCashTransactions() {
             const container = document.getElementById('cashList');
             container.innerHTML = '';
@@ -5154,6 +5130,9 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 const amountSign = transaction.transactionType === 'deposit' ? '+' : 
                                   transaction.transactionType === 'withdrawal' ? '-' : '↔';
                 
+                const supervisor = supervisors.find(sup => sup.id === transaction.supervisorId);
+                const supervisorName = supervisor ? supervisor.employeeName : (transaction.supervisorName || 'غير محدد');
+                
                 let details = '';
                 if (transaction.transactionType === 'deposit') {
                     details = `فئة: ${transaction.category}`;
@@ -5169,7 +5148,7 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                         <div class="item-title">${transaction.type}</div>
                         <div class="item-subtitle">${transaction.date}</div>
                         <div class="item-subtitle">${details}</div>
-                        <div class="item-subtitle">المسؤول: ${transaction.supervisorName || 'غير محدد'}</div>
+                        <div class="item-subtitle">المسؤول: ${supervisorName}</div>
                         <div class="item-subtitle">${transaction.notes || 'لا توجد ملاحظات'}</div>
                     </div>
                     <div class="${amountClass}">
@@ -5180,7 +5159,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             });
         }
 
-        // تحديث إحصائيات العهدة
         function updateCashStats() {
             let balance = 0;
             let totalDeposits = 0;
@@ -5201,7 +5179,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             document.getElementById('totalWithdrawals').textContent = `${totalWithdrawals} ج.م`;
         }
 
-        // تحديث قاعدة بيانات الموظفين للاستيراد
         function updateDatabaseEmployeesDropdown() {
             const dropdown = document.getElementById('selectMultipleEmployees');
             if (!dropdown) return;
@@ -5225,11 +5202,9 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 dropdown.appendChild(option);
             });
             
-            // تحديث قائمة المسؤولين المحتملين
             updateSupervisorEmployeesDropdown();
         }
 
-        // استيراد جهات الاتصال من الهاتف
         function importContacts() {
             if ('contacts' in navigator && 'select' in navigator.contacts) {
                 navigator.contacts.select(['name', 'tel'], { multiple: true })
@@ -5249,7 +5224,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
 
-        // عرض معاينة جهات الاتصال المستوردة
         function displayContactsPreview(contacts) {
             const previewDiv = document.getElementById('contactsPreview');
             const tbody = document.querySelector('#contactsPreviewTable tbody');
@@ -5283,7 +5257,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             previewDiv.style.display = 'block';
         }
 
-        // تحديد جميع جهات الاتصال
         function selectAllContacts() {
             const checkboxes = document.querySelectorAll('.contact-checkbox:not(:disabled)');
             checkboxes.forEach(checkbox => {
@@ -5291,7 +5264,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             });
         }
 
-        // إلغاء تحديد جميع جهات الاتصال
         function deselectAllContacts() {
             const checkboxes = document.querySelectorAll('.contact-checkbox:not(:disabled)');
             checkboxes.forEach(checkbox => {
@@ -5299,7 +5271,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             });
         }
 
-        // إضافة جهات الاتصال المحددة
         function addSelectedContacts() {
             const selectedContacts = [];
             const checkboxes = document.querySelectorAll('.contact-checkbox:checked:not(:disabled)');
@@ -5341,7 +5312,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
 
-        // تحميل نموذج Excel
         function downloadTemplate() {
             const templateData = [
                 ['اسم الموظف', 'رقم الهاتف', 'رقم الواتساب', 'العنوان'],
@@ -5356,7 +5326,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             XLSX.writeFile(workbook, 'نموذج_استيراد_الموظفين.xlsx');
         }
 
-        // معاينة بيانات الاستيراد
         function previewImport() {
             const fileInput = document.getElementById('importFile');
             const file = fileInput.files[0];
@@ -5434,7 +5403,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
 
-        // تحليل ملف CSV
         function parseCSV(csvText) {
             const lines = csvText.split('\n');
             const result = [];
@@ -5459,7 +5427,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             return result;
         }
 
-        // استيراد الموظفين من ملف Excel أو CSV
         function importEmployees() {
             const fileInput = document.getElementById('importFile');
             const file = fileInput.files[0];
@@ -5615,13 +5582,11 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
 
-        // التحقق من صحة رقم الهاتف
         function isValidPhone(phone) {
             const phoneRegex = /^[0-9]{10,15}$/;
             return phoneRegex.test(phone);
         }
 
-        // استيراد موظفين من قاعدة البيانات إلى الموظفين النشطين
         function importFromDatabase() {
             const selectElement = document.getElementById('selectMultipleEmployees');
             const selectedOptions = Array.from(selectElement.selectedOptions);
@@ -5717,7 +5682,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
 
-        // التحقق من عدم تكرار اسم الموظف
         function checkEmployeeDuplicate(name, errorElementId) {
             const errorElement = document.getElementById(errorElementId);
             const isDuplicate = employees.some(emp => emp.name === name);
@@ -5733,7 +5697,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
         
-        // التحقق من عدم تكرار رقم الهاتف
         function checkPhoneDuplicate(phone, errorElementId) {
             const errorElement = document.getElementById(errorElementId);
             const isDuplicate = employees.some(emp => emp.phone === phone);
@@ -5749,7 +5712,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
         
-        // التحقق من عدم تكرار اسم الموظف في قاعدة البيانات
         function checkEmployeeDatabaseDuplicate(name, errorElementId) {
             const errorElement = document.getElementById(errorElementId);
             const isDuplicate = employeeDatabase.some(emp => emp.name === name);
@@ -5765,7 +5727,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
         
-        // التحقق من عدم تكرار رقم الهاتف في قاعدة البيانات
         function checkPhoneDatabaseDuplicate(phone, errorElementId) {
             const errorElement = document.getElementById(errorElementId);
             const isDuplicate = employeeDatabase.some(emp => emp.phone === phone);
@@ -5781,7 +5742,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
         
-        // التحقق من صحة المبلغ
         function validateAmount(amount, errorElementId) {
             const errorElement = document.getElementById(errorElementId);
             
@@ -5795,20 +5755,17 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
         
-        // فتح/إغلاق القائمة الجانبية
         function toggleSideMenu() {
             sideMenu.classList.toggle('active');
             overlay.classList.toggle('active');
         }
         
-        // عرض الصفحة المحددة
         function showPage(pageId) {
             document.querySelectorAll('.tab-content').forEach(page => {
                 page.classList.remove('active');
             });
             document.getElementById(pageId).classList.add('active');
             
-            // تحديث عنوان الصفحة
             const pageTitles = {
                 'dashboard': 'لوحة التحكم',
                 'employees': 'إدارة الموظفين',
@@ -5827,7 +5784,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             };
             document.getElementById('pageTitle').textContent = pageTitles[pageId];
             
-            // تحديث البيانات عند عرض الصفحة
             if (pageId === 'dashboard') updateDashboard();
             else if (pageId === 'employees') {
                 displayEmployeesList();
@@ -5854,7 +5810,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
         
-        // إضافة موظف جديد
         function addEmployee() {
             showLoadingState(true);
             
@@ -5918,7 +5873,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
         
-        // إضافة موظف إلى قاعدة البيانات
         function addEmployeeToDatabase() {
             showLoadingState(true);
             
@@ -5959,7 +5913,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
         
-        // نقل موظف معطل إلى قاعدة البيانات
         function moveEmployeeToDatabase(employee) {
             const existingEmployee = employeeDatabase.find(emp => emp.phone === employee.phone);
             
@@ -6014,7 +5967,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
         
-        // نقل موظف من قاعدة البيانات إلى الموظفين النشطين
         function moveEmployeeFromDatabase(employee) {
             const existingEmployee = employees.find(emp => emp.phone === employee.phone);
             
@@ -6049,14 +6001,12 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             });
         }
         
-        // تفعيل موظف من قاعدة البيانات
         function activateEmployeeFromDatabase(id) {
             const employee = employeeDatabase.find(emp => emp.id === id);
             if (!employee) return;
             moveEmployeeFromDatabase(employee);
         }
         
-        // عرض قائمة الموظفين
         function displayEmployeesList() {
             const container = document.getElementById('employeesList');
             container.innerHTML = '';
@@ -6092,7 +6042,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             });
         }
         
-        // تفعيل/تعطيل الموظف
         function toggleEmployeeStatus(id) {
             const employee = employees.find(emp => emp.id === id);
             if (!employee) return;
@@ -6115,7 +6064,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
         
-        // عرض قاعدة بيانات الموظفين
         function displayEmployeeDatabase() {
             const container = document.getElementById('employeeDatabaseList');
             container.innerHTML = '';
@@ -6176,12 +6124,10 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             });
         }
         
-        // الاتصال بالموظف
         function callEmployee(phone) {
             window.open(`tel:${phone}`, '_self');
         }
         
-        // إرسال رسالة واتساب للموظف
         function sendWhatsAppToEmployee(phone) {
             const message = "مرحباً، أود التواصل معك بخصوص العمل";
             const encodedMessage = encodeURIComponent(message);
@@ -6189,7 +6135,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             window.open(whatsappUrl, '_blank');
         }
         
-        // تعديل بيانات الموظف في قاعدة البيانات
         function editEmployeeInDatabase(id) {
             const employee = employeeDatabase.find(emp => emp.id === id);
             if (!employee) return;
@@ -6224,7 +6169,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
                 });
         }
         
-        // حذف موظف من قاعدة البيانات
         function deleteEmployeeFromDatabase(id) {
             if (confirm('هل أنت متأكد من حذف هذا الموظف من قاعدة البيانات؟')) {
                 deleteData('employeeDatabase', id)
@@ -6238,7 +6182,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             }
         }
 
-        // إنشاء تقرير المرتبات
         function generateSalaryReport() {
             showLoadingState(true);
             
@@ -6317,7 +6260,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             showLoadingState(false);
         }
         
-        // عرض تفاصيل الراتب
         function showSalaryDetails(employeeName, month) {
             const emp = employees.find(e => e.name === employeeName);
             if (!emp) return;
@@ -6384,7 +6326,6 @@ ${summary.extraDays > 0 ? `- الأيام الإضافية: ${summary.extraDays}
             alert(details);
         }
         
-        // إرسال رسالة واتساب للموظف
         function sendWhatsAppMessage(employeeName, month) {
             const emp = employees.find(e => e.name === employeeName);
             if (!emp) return;
@@ -6454,7 +6395,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             window.open(whatsappUrl, '_blank');
         }
         
-        // حذف موظف
         function deleteEmployee(id) {
             if (confirm('هل أنت متأكد من حذف هذا الموظف؟')) {
                 const employee = employees.find(emp => emp.id === id);
@@ -6497,7 +6437,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             }
         }
         
-        // تعديل موظف
         function editEmployee(id) {
             const employee = employees.find(emp => emp.id === id);
             if (!employee) return;
@@ -6520,7 +6459,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 });
         }
         
-        // تعديل سجل الحضور
         function editAttendance(employeeName, date) {
             const record = attendance.find(r => r.employeeName === employeeName && r.date === date);
             if (!record) return;
@@ -6540,7 +6478,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 });
         }
         
-        // حذف سجل الحضور
         function deleteAttendance(employeeName, date) {
             if (confirm('هل أنت متأكد من حذف هذا السجل؟')) {
                 const record = attendance.find(r => r.employeeName === employeeName && r.date === date);
@@ -6557,7 +6494,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             }
         }
         
-        // تعديل إجازة
         function editLeave(id) {
             const leave = leaves.find(l => l.id === id);
             if (!leave) return;
@@ -6579,7 +6515,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 });
         }
         
-        // حذف إجازة
         function deleteLeave(id) {
             if (confirm('هل أنت متأكد من حذف هذه الإجازة؟')) {
                 deleteData('leaves', id)
@@ -6593,7 +6528,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             }
         }
         
-        // تعديل حركة مالية
         function editFinancial(id) {
             const financial = financials.find(f => f.id === id);
             if (!financial) return;
@@ -6615,7 +6549,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 });
         }
         
-        // حذف حركة مالية
         function deleteFinancial(id) {
             if (confirm('هل أنت متأكد من حذف هذه الحركة المالية؟')) {
                 deleteData('financials', id)
@@ -6629,7 +6562,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             }
         }
         
-        // تحميل النسخة الاحتياطية
         function downloadBackup() {
             const backupData = {
                 employees: employees,
@@ -6659,7 +6591,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             alert('تم تحميل النسخة الاحتياطية بنجاح');
         }
         
-        // استعادة النسخة الاحتياطية
         function restoreBackup() {
             const fileInput = document.getElementById('backupFile');
             const file = fileInput.files[0];
@@ -6710,7 +6641,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             reader.readAsText(file);
         }
         
-        // حذف جميع البيانات
         function deleteAllData() {
             if (confirm('هل أنت متأكد من حذف جميع البيانات؟ هذا الإجراء لا يمكن التراجع عنه.')) {
                 showLoadingState(true);
@@ -6736,8 +6666,76 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 });
             }
         }
+
+        function deleteSelectiveData() {
+            const dataType = document.getElementById('selectiveDataType').value;
+            const startDate = document.getElementById('selectiveStartDate').value;
+            const endDate = document.getElementById('selectiveEndDate').value;
+
+            if (!startDate || !endDate) {
+                alert('يرجى تحديد تاريخ البداية والنهاية');
+                return;
+            }
+
+            if (new Date(startDate) > new Date(endDate)) {
+                alert('تاريخ البداية يجب أن يكون قبل تاريخ النهاية');
+                return;
+            }
+
+            let dataArray, dataTypeName;
+            switch (dataType) {
+                case 'attendance':
+                    dataArray = attendance;
+                    dataTypeName = 'سجلات الحضور';
+                    break;
+                case 'leaves':
+                    dataArray = leaves;
+                    dataTypeName = 'سجلات الإجازات';
+                    break;
+                case 'financials':
+                    dataArray = financials;
+                    dataTypeName = 'الحركات المالية';
+                    break;
+                case 'cashTransactions':
+                    dataArray = cashTransactions;
+                    dataTypeName = 'حركات العهدة';
+                    break;
+                case 'faults':
+                    dataArray = faults;
+                    dataTypeName = 'سجل الأعطال';
+                    break;
+                default:
+                    alert('نوع البيانات غير صحيح');
+                    return;
+            }
+
+            const recordsToDelete = dataArray.filter(record => {
+                return record.date >= startDate && record.date <= endDate;
+            });
+
+            if (recordsToDelete.length === 0) {
+                alert(`لا توجد ${dataTypeName} في الفترة المحددة`);
+                return;
+            }
+
+            if (confirm(`هل أنت متأكد من حذف ${recordsToDelete.length} سجل من ${dataTypeName} للفترة من ${startDate} إلى ${endDate}؟ هذا الإجراء لا يمكن التراجع عنه.`)) {
+                showLoadingState(true);
+
+                const deletePromises = recordsToDelete.map(record => deleteData(dataType, record.id));
+
+                Promise.all(deletePromises)
+                    .then(() => {
+                        showLoadingState(false);
+                        alert(`تم حذف ${recordsToDelete.length} سجل بنجاح`);
+                        loadAllData();
+                    })
+                    .catch(error => {
+                        showLoadingState(false);
+                        alert('حدث خطأ أثناء حذف البيانات. يرجى المحاولة مرة أخرى.');
+                    });
+            }
+        }
         
-        // تصدير جميع البيانات
         function exportAllData() {
             const data = {
                 الموظفون: employees,
@@ -6754,7 +6752,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             exportToExcel(data, 'جميع_البيانات');
         }
         
-        // تصدير بيانات الموظفين
         function exportEmployeesToExcel() {
             const data = employees.map(emp => ({
                 'اسم الموظف': emp.name,
@@ -6769,7 +6766,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             exportToExcel(data, 'بيانات_الموظفين');
         }
         
-        // تصدير قاعدة بيانات الموظفين
         function exportEmployeeDatabaseToExcel() {
             const data = employeeDatabase.map(emp => ({
                 'اسم الموظف': emp.name,
@@ -6782,7 +6778,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             exportToExcel(data, 'قاعدة_بيانات_الموظفين');
         }
         
-        // تصدير بيانات الحضور
         function exportAttendanceToExcel() {
             const month = document.getElementById('filterAttendanceMonth').value;
             const stationFilter = document.getElementById('filterAttendanceStation').value;
@@ -6793,28 +6788,35 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 filteredAttendance = filteredAttendance.filter(record => record.stationName === stationFilter);
             }
             
-            const data = filteredAttendance.map(record => ({
-                'اسم الموظف': record.employeeName,
-                'المحطة': record.stationName || 'غير محدد',
-                'المسؤول': record.supervisorName || 'غير محدد',
-                'التاريخ': record.date,
-                'الحالة': record.status
-            }));
+            const data = filteredAttendance.map(record => {
+                const supervisor = supervisors.find(sup => sup.id === record.supervisorId);
+                const supervisorName = supervisor ? supervisor.employeeName : (record.supervisorName || 'غير محدد');
+                
+                return {
+                    'اسم الموظف': record.employeeName,
+                    'المحطة': record.stationName || 'غير محدد',
+                    'المسؤول': supervisorName,
+                    'التاريخ': record.date,
+                    'الحالة': record.status
+                };
+            });
             
             exportToExcel(data, 'سجل_الحضور');
         }
         
-        // تصدير بيانات الإجازات
         function exportLeavesToExcel() {
             const data = leaves.map(leave => {
                 const startDate = new Date(leave.start);
                 const endDate = new Date(leave.end);
                 const duration = Math.ceil((endDate - startDate) / (1000 * 60 * 60 * 24)) + 1;
                 
+                const supervisor = supervisors.find(sup => sup.id === leave.supervisorId);
+                const supervisorName = supervisor ? supervisor.employeeName : (leave.supervisorName || 'غير محدد');
+                
                 return {
                     'اسم الموظف': leave.employeeName,
                     'المحطة': leave.stationName || 'غير محدد',
-                    'المسؤول': leave.supervisorName || 'غير محدد',
+                    'المسؤول': supervisorName,
                     'نوع الإجازة': leave.type,
                     'تاريخ البدء': leave.start,
                     'تاريخ الانتهاء': leave.end,
@@ -6826,10 +6828,11 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             exportToExcel(data, 'سجل_الإجازات');
         }
         
-        // تصدير بيانات الحركات المالية
         function exportFinancialsToExcel() {
             const month = document.getElementById('filterFinancialMonth') ? 
                          document.getElementById('filterFinancialMonth').value : '';
+            const employeeFilter = document.getElementById('filterFinancialEmployee') ? 
+                              document.getElementById('filterFinancialEmployee').value : '';
             const stationFilter = document.getElementById('filterFinancialStation') ? 
                               document.getElementById('filterFinancialStation').value : '';
             const typeFilter = document.getElementById('filterFinancialType') ? 
@@ -6840,6 +6843,12 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             if (month) {
                 filteredFinancials = filteredFinancials.filter(financial => 
                     financial.date.startsWith(month)
+                );
+            }
+            
+            if (employeeFilter) {
+                filteredFinancials = filteredFinancials.filter(financial => 
+                    financial.employeeName === employeeFilter
                 );
             }
             
@@ -6855,20 +6864,24 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
                 );
             }
             
-            const data = filteredFinancials.map(financial => ({
-                'اسم الموظف': financial.employeeName,
-                'المحطة': financial.stationName || 'غير محدد',
-                'المسؤول': financial.supervisorName || 'غير محدد',
-                'النوع': financial.type,
-                'المبلغ (ج.م)': financial.amount,
-                'التاريخ': financial.date,
-                'ملاحظات': financial.notes
-            }));
+            const data = filteredFinancials.map(financial => {
+                const supervisor = supervisors.find(sup => sup.id === financial.supervisorId);
+                const supervisorName = supervisor ? supervisor.employeeName : (financial.supervisorName || 'غير محدد');
+                
+                return {
+                    'اسم الموظف': financial.employeeName,
+                    'المحطة': financial.stationName || 'غير محدد',
+                    'المسؤول': supervisorName,
+                    'النوع': financial.type,
+                    'المبلغ (ج.م)': financial.amount,
+                    'التاريخ': financial.date,
+                    'ملاحظات': financial.notes
+                };
+            });
             
             exportToExcel(data, 'الحركات_المالية');
         }
         
-        // تصدير تقرير المرتبات
         function exportReportToExcel() {
             const month = document.getElementById('reportMonth').value;
             const data = [];
@@ -6932,7 +6945,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             exportToExcel(data, 'تقرير_المرتبات');
         }
         
-        // تصدير حركات العهدة
         function exportCashToExcel() {
             const month = document.getElementById('filterCashMonth').value;
             const typeFilter = document.getElementById('filterCashType').value;
@@ -6952,11 +6964,14 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             }
             
             const data = filteredTransactions.map(transaction => {
+                const supervisor = supervisors.find(sup => sup.id === transaction.supervisorId);
+                const supervisorName = supervisor ? supervisor.employeeName : (transaction.supervisorName || 'غير محدد');
+                
                 const baseData = {
                     'النوع': transaction.type,
                     'المبلغ (ج.م)': transaction.amount,
                     'التاريخ': transaction.date,
-                    'المسؤول': transaction.supervisorName || 'غير محدد',
+                    'المسؤول': supervisorName,
                     'نوع الحركة': transaction.transactionType === 'deposit' ? 'إيداع' : 'صرف',
                     'ملاحظات': transaction.notes || 'لا توجد ملاحظات'
                 };
@@ -6976,7 +6991,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             exportToExcel(data, 'حركات_العهدة');
         }
         
-        // تصدير البيانات إلى Excel
         function exportToExcel(data, fileName) {
             try {
                 const worksheet = XLSX.utils.json_to_sheet(data);
@@ -6990,7 +7004,6 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
             }
         }
 
-        // جعل الدوال متاحة عالمياً
         window.editLeave = editLeave;
         window.deleteLeave = deleteLeave;
         window.editAttendance = editAttendance;
@@ -7016,15 +7029,12 @@ ${extraDays > 0 ? `- الأيام الإضافية: ${extraDays} يوم\n- قي�
         window.deleteFault = deleteFault;
     </script>
     
-    <!-- تضمين service worker داخل نفس الملف مع تحديث الرابط -->
     <script>
-        // Service Worker للتخزين المؤقت
         if ('serviceWorker' in navigator) {
             navigator.serviceWorker.register('https://yasminnmain44-design.github.io/Management/service-worker.js').catch(function(error) {
                 console.log('ServiceWorker registration failed: ', error);
             });
             
-            // إنشاء service worker ديناميكياً
             const swCode = `
                 const CACHE_NAME = 'attendance-cache-v1';
                 const urlsToCache = [
