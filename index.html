@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>نظام إدارة الحضور والغياب المتقدم</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.1/firebase-database-compat.js"></script>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<div class="app-container">
+
+    <!-- ======================== HEADER ======================== -->
+    <header class="app-header">
+        <div class="header-top">
+            <div class="app-title" id="pageTitle">لوحة التحكم</div>
+            <div class="header-actions">
+                <button class="theme-toggle" id="themeToggle" title="تبديل المظهر">
+                    <i class="fas fa-sun icon-sun"></i>
+                    <i class="fas fa-moon icon-moon"></i>
+                </button>
+                <button class="header-action-btn" id="exportBtn" title="تصدير البيانات">
+                    <i class="fas fa-file-export"></i>
+                </button>
+                <button class="header-action-btn" id="menuBtn" title="القائمة">
+                    <i class="fas fa-bars"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- ======================== CONNECTION STATUS ======================== -->
+    <div id="connectionStatus" class="connection-status connection-online">
+        <i class="fas fa-wifi"></i> متصل بقاعدة البيانات السحابية
+    </div>
+
+    <!-- ======================== EDIT EMPLOYEE MODAL ======================== -->
+    <div class="modal-overlay" id="editEmployeeModal">
+        <div class="modal-container">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-edit"></i> تعديل بيانات الموظف</h3>
+                <button class="modal-close" onclick="closeEditModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="editEmployeeForm">
+                    <input type="hidden" id="editEmpId">
+                    <div class="form-group">
+                        <label for="editEmpName">اسم الموظف</label>
+                        <input type="text" id="editEmpName" required placeholder="أدخل اسم الموظف">
+                        <div class="validation-error" id="editEmpNameError">اسم الموظف موجود مسبقاً</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmpPhone">رقم الهاتف</label>
+                        <input type="text" id="editEmpPhone" required placeholder="أدخل رقم الهاتف">
+                        <div class="validation-error" id="editEmpPhoneError">رقم الهاتف موجود مسبقاً</div>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmpJob">الوظيفة</label>
+                        <input type="text" id="editEmpJob" required placeholder="أدخل الوظيفة">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmpSalary">الراتب الأساسي (جنيه مصري)</label>
+                        <input type="number" id="editEmpSalary" required placeholder="أدخل الراتب">
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmpWorkDays">أيام العمل المتفق عليها (يوم)</label>
+                        <input type="number" id="editEmpWorkDays" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editEmpActive">حالة الموظف</label>
+                        <select id="editEmpActive" required>
+                            <option value="true">فعال</option>
+                            <option value="false">غير فعال</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeEditModal()">إلغاء</button>
+                <button class="btn-success" onclick="saveEmployeeEdit()">حفظ التعديلات</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== LOAN STATUS MODAL ======================== -->
+    <div class="modal-overlay" id="updateLoanModal">
+        <div class="modal-container">
+            <div class="modal-header" style="background: var(--loan-pending);">
+                <h3><i class="fas fa-hand-holding-heart"></i> تحديث حالة السلفة</h3>
+                <button class="modal-close" onclick="closeLoanModal()">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="updateLoanForm">
+                    <input type="hidden" id="loanId">
+                    <div class="loan-detail-card" id="loanDetailsCard"></div>
+                    <div class="form-group" style="margin-top:15px;">
+                        <label for="loanStatus">تحديث الحالة</label>
+                        <select id="loanStatus" required>
+                            <option value="قيد الانتظار">⏳ قيد الانتظار</option>
+                            <option value="تمت الموافقة">✅ تمت الموافقة</option>
+                            <option value="مرفوضة">❌ مرفوضة</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="loanAdminNotes">ملاحظات الإدارة</label>
+                        <textarea id="loanAdminNotes" rows="3" placeholder="أدخل ملاحظات الإدارة (اختياري)"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-secondary" onclick="closeLoanModal()">إلغاء</button>
+                <button class="btn-success" onclick="updateLoanStatus()">حفظ التحديث</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ======================== SIDE MENU ======================== -->
+    <div class="side-menu" id="sideMenu">
+        <div class="side-menu-header">
+            <div class="side-menu-title">القائمة الرئيسية</div>
+            <button class="close-menu" id="closeMenu"><i class="fas fa-times"></i></button>
+        </div>
+        <ul class="menu-items">
+            <li class="menu-item"><a href="#" class="menu-link active" data-target="dashboard"><i class="fas fa-home"></i><span>لوحة التحكم</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="employees"><i class="fas fa-users"></i><span>إدارة الموظفين</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="employee-database"><i class="fas fa-address-book"></i><span>قاعدة بيانات الموظفين</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="attendance"><i class="fas fa-calendar-check"></i><span>الحضور والغياب</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="employee-records"><i class="fas fa-user-circle"></i><span>سجل الموظفين</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="financial"><i class="fas fa-hand-holding-usd"></i><span>السلف والمكافآت</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="loans"><i class="fas fa-hand-holding-heart"></i><span>طلبات السلف</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="reports"><i class="fas fa-chart-bar"></i><span>التقارير</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="cash"><i class="fas fa-wallet"></i><span>إدارة العهدة</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="faults"><i class="fas fa-exclamation-triangle"></i><span>سجل الأعطال</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="stations"><i class="fas fa-building"></i><span>إدارة المحطات</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="supervisors"><i class="fas fa-user-tie"></i><span>إدارة المسؤولين</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" data-target="backup"><i class="fas fa-database"></i><span>النسخ الاحتياطي</span></a></li>
+            <li class="menu-item"><a href="#" class="menu-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span></a></li>
+        </ul>
+    </div>
+    <div class="overlay" id="overlay"></div>
+
+    <!-- ======================== MAIN CONTENT ======================== -->
+    <main class="main-content">
+
+        <!-- ========== DASHBOARD ========== -->
+        <div id="dashboard" class="tab-content active">
+            <div class="stations-bar" id="stationsBar">
+                <div class="stations-bar-title">
+                    <span><i class="fas fa-map-marker-alt"></i> المحطات التي تم تسجيل الحضور لها اليوم:</span>
+                    <span class="stations-count-badge" id="stationsCountBadge">0 محطة</span>
+                </div>
+                <div class="stations-bar-container" id="stationsBarContainer"></div>
+            </div>
+
+            <div class="stats-container">
+                <div class="stat-card"><div class="stat-title">إجمالي الموظفين</div><div class="stat-value" id="totalEmployees">0</div></div>
+                <div class="stat-card"><div class="stat-title">الحضور اليوم</div><div class="stat-value" id="todayAttendance">0</div></div>
+                <div class="stat-card"><div class="stat-title">عدد المحطات</div><div class="stat-value" id="totalStations">0</div></div>
+                <div class="stat-card"><div class="stat-title">إجمالي الخصومات</div><div class="stat-value" id="totalDeductions">0</div></div>
+                <div class="stat-card"><div class="stat-title">إجمالي المكافآت</div><div class="stat-value" id="monthlyRewards">0</div></div>
+                <div class="stat-card"><div class="stat-title">إجمالي السلف</div><div class="stat-value" id="totalLoans">0</div></div>
+                <div class="stat-card"><div class="stat-title">طلبات السلف</div><div class="stat-value" id="pendingLoans">0</div></div>
+                <div class="stat-card"><div class="stat-title">الأعطال النشطة</div><div class="stat-value" id="activeFaults">0</div></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><i class="fas fa-wallet"></i> إحصائيات العهدة</div>
+                <div class="card-body">
+                    <div class="cash-stats-container">
+                        <div class="cash-stat-box" id="cashBalanceBox">
+                            <div class="cash-stat-icon"><i class="fas fa-coins"></i></div>
+                            <div class="cash-stat-number" id="dashboardCashBalance">0 ج.م</div>
+                            <div class="cash-stat-label">الرصيد الحالي</div>
+                        </div>
+                        <div class="cash-stat-box">
+                            <div class="cash-stat-icon"><i class="fas fa-plus-circle"></i></div>
+                            <div class="cash-stat-number" id="dashboardTotalDeposits">0 ج.م</div>
+                            <div class="cash-stat-label">إجمالي الإيداعات</div>
+                        </div>
+                        <div class="cash-stat-box">
+                            <div class="cash-stat-icon"><i class="fas fa-minus-circle"></i></div>
+                            <div class="cash-stat-number" id="dashboardTotalWithdrawals">0 ج.م</div>
+                            <div class="cash-stat-label">إجمالي المصروفات</div>
+                        </div>
+                    </div>
+                    <div class="cash-dashboard-stats">
+                        <div class="cash-dashboard-item"><div class="cash-dashboard-label">إيداعات اليوم</div><div class="cash-dashboard-value" id="dashboardTodayDeposits">0 ج.م</div></div>
+                        <div class="cash-dashboard-item"><div class="cash-dashboard-label">مصروفات اليوم</div><div class="cash-dashboard-value negative" id="dashboardTodayWithdrawals">0 ج.م</div></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="quick-actions">
+                <div class="quick-action" data-target="employee-database"><i class="fas fa-address-book"></i><span>قاعدة بيانات الموظفين</span></div>
+                <div class="quick-action" data-target="employee-records"><i class="fas fa-user-circle"></i><span>سجل الموظفين</span></div>
+                <div class="quick-action" data-target="reports"><i class="fas fa-chart-bar"></i><span>التقارير</span></div>
+                <div class="quick-action" data-target="supervisors"><i class="fas fa-user-tie"></i><span>إدارة المسؤولين</span></div>
+                <div class="quick-action" data-target="backup"><i class="fas fa-database"></i><span>النسخ الاحتياطي</span></div>
+                <div class="quick-action" data-target="cash"><i class="fas fa-wallet"></i><span>العهدة</span></div>
+                <div class="quick-action" data-target="loans"><i class="fas fa-hand-holding-heart"></i><span>طلبات السلف</span></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">الحضور اليومي حسب المحطة<span class="see-all" data-target="attendance">عرض الكل</span></div>
+                <div class="card-body">
+                    <div class="filter-section">
+                        <div class="form-group" style="margin-bottom:0;">
+                            <select id="dashboardStationFilter"><option value="">جميع المحطات</option></select>
+                        </div>
+                    </div>
+                    <div id="todayAttendanceList" class="empty-state">لا توجد سجلات حضور لهذا اليوم</div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">آخر حركات العهدة<span class="see-all" data-target="cash">عرض الكل</span></div>
+                <div class="card-body" id="recentCashTransactions"></div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><i class="fas fa-hand-holding-heart"></i> آخر طلبات السلف<span class="see-all" data-target="loans">عرض الكل</span></div>
+                <div class="card-body" id="recentLoans"></div>
+            </div>
+        </div>
+
+        <!-- ========== EMPLOYEES ========== -->
+        <div id="employees" class="tab-content">
+            <div class="card">
+                <div class="card-header" id="employeeFormHeader">
+                    إضافة موظف جديد
+                    <button class="btn-secondary" id="showAddForm" style="padding:8px 12px;width:auto;">إظهار النموذج</button>
+                </div>
+                <div class="card-body">
+                    <form id="employeeForm" class="hidden">
+                        <div class="form-group"><label for="empName">اسم الموظف</label><input type="text" id="empName" required placeholder="أدخل اسم الموظف"><div class="validation-error" id="empNameError">اسم الموظف موجود مسبقاً</div></div>
+                        <div class="form-group"><label for="empPhone">رقم الهاتف</label><input type="text" id="empPhone" required placeholder="أدخل رقم الهاتف"><div class="validation-error" id="empPhoneError">رقم الهاتف موجود مسبقاً</div></div>
+                        <div class="form-group"><label for="empJob">الوظيفة</label><input type="text" id="empJob" required placeholder="أدخل الوظيفة"></div>
+                        <div class="form-group"><label for="empSalary">الراتب الأساسي (جنيه مصري)</label><input type="number" id="empSalary" required placeholder="أدخل الراتب"></div>
+                        <div class="form-group"><label for="empWorkDays">أيام العمل المتفق عليها (يوم)</label><input type="number" id="empWorkDays" value="24" required></div>
+                        <div class="form-group"><label for="empActive">حالة الموظف</label><select id="empActive" required><option value="true">فعال</option><option value="false">غير فعال</option></select></div>
+                        <button type="submit" class="btn-success"><span id="employeeSubmitText">إضافة الموظف</span></button>
+                    </form>
+                    <div id="employeeFormMessage" class="empty-state">يجب إضافة الموظف أولاً في قاعدة البيانات قبل إضافته إلى الموظفين النشطين</div>
+
+                    <div class="import-section">
+                        <h3>استيراد موظفين من قاعدة البيانات</h3>
+                        <p style="color:var(--text-secondary);margin-bottom:15px;">يمكنك استيراد موظفين من قاعدة البيانات وإضافتهم كموظفين نشطين.</p>
+                        <div class="form-group"><label for="selectMultipleEmployees">اختر الموظفين للإضافة</label><select id="selectMultipleEmployees" multiple style="height:150px;"></select></div>
+                        <div class="form-group"><label for="defaultJob">الوظيفة الافتراضية</label><input type="text" id="defaultJob" placeholder="أدخل الوظيفة الافتراضية"></div>
+                        <div class="form-group"><label for="defaultSalary">الراتب الأساسي الافتراضي (جنيه مصري)</label><input type="number" id="defaultSalary" placeholder="أدخل الراتب الافتراضي"></div>
+                        <div class="form-group"><label for="defaultWorkDays">أيام العمل الافتراضية (يوم)</label><input type="number" id="defaultWorkDays" value="24"></div>
+                        <button class="btn-success" id="importFromDatabaseBtn"><i class="fas fa-user-plus"></i> إضافة الموظفين المحددين</button>
+                        <div id="importStatus" class="import-status" style="display:none;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><i class="fas fa-search"></i> البحث السريع عن الموظفين<button class="btn-secondary" id="exportEmployees" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body">
+                    <div class="search-box"><i class="fas fa-search"></i><input type="text" id="quickSearchEmployee" placeholder="ابحث بالاسم أو رقم الهاتف..."></div>
+                    <div id="searchResultsCount" class="search-results-count">عرض جميع الموظفين (0)</div>
+                    <div id="employeesList" class="empty-state">لا يوجد موظفين مسجلين</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== EMPLOYEE DATABASE ========== -->
+        <div id="employee-database" class="tab-content">
+            <div class="card add-employee-db">
+                <div class="card-header">إضافة موظف جديد إلى قاعدة البيانات</div>
+                <div class="card-body">
+                    <form id="employeeDatabaseForm">
+                        <div class="form-group"><label for="dbEmpName">اسم الموظف</label><input type="text" id="dbEmpName" required placeholder="أدخل اسم الموظف"><div class="validation-error" id="dbEmpNameError">اسم الموظف موجود مسبقاً</div></div>
+                        <div class="form-group"><label for="dbEmpPhone">رقم الهاتف</label><input type="text" id="dbEmpPhone" required placeholder="أدخل رقم الهاتف"><div class="validation-error" id="dbEmpPhoneError">رقم الهاتف موجود مسبقاً</div></div>
+                        <div class="form-group"><label for="dbEmpWhatsapp">رقم الواتساب</label><input type="text" id="dbEmpWhatsapp" placeholder="أدخل رقم الواتساب (اختياري)"></div>
+                        <div class="form-group"><label for="dbEmpAddress">العنوان</label><textarea id="dbEmpAddress" rows="2" placeholder="أدخل عنوان الموظف (اختياري)"></textarea></div>
+                        <button type="submit" class="btn-success"><span id="employeeDbSubmitText">إضافة إلى قاعدة البيانات</span></button>
+                    </form>
+
+                    <div class="contacts-import-section">
+                        <h3>استيراد جهات الاتصال من الهاتف</h3>
+                        <p style="color:var(--text-secondary);margin-bottom:15px;">يمكنك استيراد جهات الاتصال من هاتفك مباشرة.</p>
+                        <div class="contacts-import-actions">
+                            <button class="btn-success" id="importContactsBtn"><i class="fas fa-address-book"></i> استيراد جهات الاتصال</button>
+                        </div>
+                        <div id="contactsPreview" class="contacts-preview" style="display:none;">
+                            <div class="contacts-selection">
+                                <h4 style="color:var(--text-heading);">اختر جهات الاتصال للإضافة</h4>
+                                <div class="contacts-selection-actions">
+                                    <button class="btn-secondary" id="selectAllContacts">تحديد الكل</button>
+                                    <button class="btn-secondary" id="deselectAllContacts">إلغاء التحديد</button>
+                                </div>
+                            </div>
+                            <table id="contactsPreviewTable">
+                                <thead><tr><th>تحديد</th><th>الاسم</th><th>رقم الهاتف</th><th>الحالة</th></tr></thead>
+                                <tbody></tbody>
+                            </table>
+                            <div class="contacts-import-actions" style="margin-top:15px;">
+                                <button class="btn-success" id="addSelectedContactsBtn"><i class="fas fa-user-plus"></i> إضافة جهات الاتصال المحددة</button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="import-section">
+                        <h3>استيراد موظفين من ملف Excel أو CSV</h3>
+                        <p style="color:var(--text-secondary);margin-bottom:15px;">يمكنك استيراد قائمة بالموظفين من ملف Excel أو CSV.</p>
+                        <div class="import-template">
+                            <strong>نموذج ملف Excel/CSV المطلوب:</strong>
+                            <ul><li>العمود الأول: اسم الموظف (مطلوب)</li><li>العمود الثاني: رقم الهاتف (مطلوب)</li><li>العمود الثالث: رقم الواتساب (اختياري)</li><li>العمود الرابع: العنوان (اختياري)</li></ul>
+                            <button class="btn-secondary" id="downloadTemplateBtn" style="padding:8px 12px;width:auto;margin-top:8px;"><i class="fas fa-download"></i> تحميل النموذج</button>
+                        </div>
+                        <div class="form-group" style="margin-top:15px;"><label for="importFile">اختر ملف Excel أو CSV</label><input type="file" id="importFile" accept=".xlsx,.xls,.csv"></div>
+                        <div class="import-actions">
+                            <button class="btn-warning" id="previewImportBtn"><i class="fas fa-eye"></i> معاينة البيانات</button>
+                            <button class="btn-success" id="importEmployeesBtn"><i class="fas fa-upload"></i> استيراد الموظفين</button>
+                        </div>
+                        <div id="importPreview" class="import-preview" style="display:none;">
+                            <h4 style="color:var(--text-heading);margin-bottom:10px;">معاينة البيانات المستوردة</h4>
+                            <table id="previewTable"><thead><tr><th>اسم الموظف</th><th>رقم الهاتف</th><th>رقم الواتساب</th><th>العنوان</th></tr></thead><tbody></tbody></table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">قاعدة بيانات الموظفين<button class="btn-secondary" id="exportEmployeeDatabase" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body">
+                    <div class="form-group"><input type="text" id="searchEmployee" placeholder="ابحث عن موظف بالاسم أو رقم الهاتف..."></div>
+                    <div id="employeeDatabaseList" class="empty-state">لا يوجد موظفين مسجلين</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== ATTENDANCE ========== -->
+        <div id="attendance" class="tab-content">
+            <div class="card">
+                <div class="card-header">تسجيل الحضور والغياب</div>
+                <div class="card-body">
+                    <div class="form-group">
+                        <button class="btn-success" id="autoAttendanceBtn"><span id="autoAttendanceText">تسجيل الحضور التلقائي</span></button>
+                    </div>
+                    <form id="manualAttendanceForm">
+                        <div class="form-group"><label for="attendanceEmployee">اختر الموظف</label><div id="attendanceEmployeeContainer"></div><select id="attendanceEmployee" style="display:none;"></select></div>
+                        <div class="form-group"><label for="attendanceStation">اختر المحطة</label><select id="attendanceStation" required><option value="">اختر المحطة</option></select></div>
+                        <div class="form-group"><label for="attendanceSupervisor">المسؤول عن التسجيل</label><select id="attendanceSupervisor" required><option value="">اختر المسؤول</option></select></div>
+                        <div class="form-group"><label for="attendanceDate">التاريخ</label><input type="date" id="attendanceDate" required></div>
+                        <div class="form-group"><label for="attendanceStatus">الحالة</label><select id="attendanceStatus" required><option value="حاضر">حاضر (موجود في المحطة)</option><option value="غائب">غائب (غير موجود في المحطة)</option><option value="إجازة">إجازة</option></select></div>
+                        <button type="submit" class="btn-success"><span id="attendanceSubmitText">تسجيل</span></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">سجل الحضور والغياب<button class="btn-secondary" id="exportAttendance" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body">
+                    <div class="filter-section">
+                        <h4>فلترة السجل</h4>
+                        <div class="filter-row">
+                            <div class="form-group"><label for="filterAttendanceMonth">اختر الشهر</label><input type="month" id="filterAttendanceMonth"></div>
+                            <div class="form-group"><label for="filterAttendanceStation">اختر المحطة</label><select id="filterAttendanceStation"><option value="">جميع المحطات</option></select></div>
+                            <div class="filter-actions"><button class="btn-success" id="applyAttendanceFilter"><i class="fas fa-filter"></i> تطبيق</button></div>
+                        </div>
+                    </div>
+                    <div id="attendanceList" class="empty-state">لا توجد سجلات حضور</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== EMPLOYEE RECORDS ========== -->
+        <div id="employee-records" class="tab-content">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-file-alt"></i> سجل الموظفين الشهري (مع وقت التسجيل)</div>
+                <div class="card-body">
+                    <div class="report-controls">
+                        <div class="form-group"><label for="selectEmployeeForReport"><i class="fas fa-user"></i> اختر الموظف</label><div id="selectEmployeeForReportContainer"></div><select id="selectEmployeeForReport" style="display:none;"></select></div>
+                        <div class="form-group"><label for="selectMonthForReport"><i class="fas fa-calendar-alt"></i> اختر الشهر</label><input type="month" id="selectMonthForReport" required></div>
+                        <button id="generateEmployeeReportBtn" class="btn-success generate-report-btn"><i class="fas fa-chart-line"></i> إنشاء التقرير</button>
+                    </div>
+                </div>
+            </div>
+            <div id="employeeReportContainer" style="display:none;"></div>
+        </div>
+
+        <!-- ========== FINANCIAL ========== -->
+        <div id="financial" class="tab-content">
+            <div class="card">
+                <div class="card-header">السلف والمكافآت والخصومات</div>
+                <div class="card-body">
+                    <form id="financialForm">
+                        <div class="form-group"><label for="financialEmployee">اختر الموظف</label><div id="financialEmployeeContainer"></div><select id="financialEmployee" style="display:none;"></select></div>
+                        <div class="form-group"><label for="financialStation">اختر المحطة</label><select id="financialStation" required><option value="">اختر المحطة</option></select></div>
+                        <div class="form-group"><label for="financialSupervisor">المسؤول عن التسجيل</label><select id="financialSupervisor" required><option value="">اختر المسؤول</option></select></div>
+                        <div class="form-group"><label for="financialType">النوع</label><select id="financialType" required><option value="سلفة">سلفة</option><option value="مكافأة">مكافأة</option><option value="خصم">خصم</option></select></div>
+                        <div class="form-group"><label for="financialAmount">المبلغ (جنيه مصري)</label><input type="number" id="financialAmount" required placeholder="أدخل المبلغ"></div>
+                        <div class="form-group"><label for="financialDate">التاريخ</label><input type="date" id="financialDate" required></div>
+                        <div class="form-group"><label for="financialNotes">ملاحظات</label><textarea id="financialNotes" rows="3" placeholder="أدخل ملاحظات"></textarea></div>
+                        <button type="submit" class="btn-success"><span id="financialSubmitText">تسجيل</span></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">سجل السلف والمكافآت والخصومات<button class="btn-secondary" id="exportFinancials" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body">
+                    <div class="filter-section">
+                        <h4>فلترة السجل</h4>
+                        <div class="filter-row">
+                            <div class="form-group"><label for="filterFinancialMonth">اختر الشهر</label><input type="month" id="filterFinancialMonth"></div>
+                            <div class="form-group"><label for="filterFinancialEmployee">اسم الموظف</label><div id="filterFinancialEmployeeContainer"></div><select id="filterFinancialEmployee" style="display:none;"></select></div>
+                            <div class="form-group"><label for="filterFinancialStation">اختر المحطة</label><select id="filterFinancialStation"><option value="">جميع المحطات</option></select></div>
+                            <div class="form-group"><label for="filterFinancialType">نوع الحركة</label><select id="filterFinancialType"><option value="">جميع الحركات</option><option value="سلفة">سلفة</option><option value="مكافأة">مكافأة</option><option value="خصم">خصم</option></select></div>
+                            <div class="filter-actions"><button class="btn-success" id="applyFinancialFilter"><i class="fas fa-filter"></i> تطبيق الفلتر</button></div>
+                        </div>
+                    </div>
+                    <div id="financialList" class="empty-state">لا توجد حركات مالية مسجلة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== LOANS ========== -->
+        <div id="loans" class="tab-content">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-hand-holding-heart"></i> إدارة طلبات السلف</div>
+                <div class="card-body">
+                    <div class="loan-stats">
+                        <div class="loan-stat-card pending"><div class="loan-stat-icon"><i class="fas fa-clock"></i></div><div class="loan-stat-number" id="pendingLoansCount">0</div><div class="loan-stat-label">قيد الانتظار</div></div>
+                        <div class="loan-stat-card approved"><div class="loan-stat-icon"><i class="fas fa-check-circle"></i></div><div class="loan-stat-number" id="approvedLoansCount">0</div><div class="loan-stat-label">تمت الموافقة</div></div>
+                        <div class="loan-stat-card rejected"><div class="loan-stat-icon"><i class="fas fa-times-circle"></i></div><div class="loan-stat-number" id="rejectedLoansCount">0</div><div class="loan-stat-label">مرفوضة</div></div>
+                    </div>
+
+                    <div class="loan-filter-tabs">
+                        <div class="loan-filter-tab pending active" onclick="filterLoans('pending')">قيد الانتظار</div>
+                        <div class="loan-filter-tab approved" onclick="filterLoans('approved')">تمت الموافقة</div>
+                        <div class="loan-filter-tab rejected" onclick="filterLoans('rejected')">مرفوضة</div>
+                        <div class="loan-filter-tab" onclick="filterLoans('all')">الكل</div>
+                    </div>
+
+                    <div class="filter-section">
+                        <div class="filter-row">
+                            <div class="form-group"><label for="filterLoanStation">المحطة</label><select id="filterLoanStation"><option value="">جميع المحطات</option></select></div>
+                            <div class="form-group"><label for="filterLoanSupervisor">المسؤول</label><select id="filterLoanSupervisor"><option value="">جميع المسؤولين</option></select></div>
+                            <div class="form-group"><label for="filterLoanStartDate">من تاريخ</label><input type="date" id="filterLoanStartDate"></div>
+                            <div class="form-group"><label for="filterLoanEndDate">إلى تاريخ</label><input type="date" id="filterLoanEndDate"></div>
+                            <div class="filter-actions">
+                                <button class="btn-success" onclick="applyLoanFilters()"><i class="fas fa-filter"></i> تطبيق</button>
+                                <button class="btn-secondary" onclick="resetLoanFilters()"><i class="fas fa-redo"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="table-container">
+                        <table id="loansTable">
+                            <thead><tr><th>المسؤول</th><th>المحطة</th><th>المبلغ</th><th>السبب</th><th>التاريخ</th><th>وقت التسجيل</th><th>الحالة</th><th>الإجراءات</th></tr></thead>
+                            <tbody id="loansTableBody"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== REPORTS ========== -->
+        <div id="reports" class="tab-content">
+            <div class="card">
+                <div class="card-header">تقرير المرتبات<button class="btn-secondary" id="exportReport" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body">
+                    <div class="salary-report-filters">
+                        <h4>فلترة التقرير</h4>
+                        <div class="filter-row">
+                            <div class="form-group"><label for="reportMonth">اختر الشهر</label><input type="month" id="reportMonth"></div>
+                            <div class="form-group"><label for="reportStationFilter">اختر المحطة</label><select id="reportStationFilter"><option value="">جميع المحطات</option></select></div>
+                            <div class="form-group"><label for="reportEmployeeFilter">اختر الموظف</label><div id="reportEmployeeFilterContainer"></div><select id="reportEmployeeFilter" style="display:none;"></select></div>
+                        </div>
+                        <button id="generateReport" class="btn-success" style="margin-top:10px;"><span id="generateReportText">إنشاء التقرير</span></button>
+                    </div>
+                    <div id="reportSummary" class="report-summary" style="display:none;"><h4 style="color:var(--text-heading);margin-bottom:10px;">ملخص التقرير</h4><div id="reportSummaryContent"></div></div>
+                    <div class="table-container">
+                        <table id="salaryReportTable">
+                            <thead><tr><th>اسم الموظف</th><th>الوظيفة</th><th>المحطة</th><th>الراتب الأساسي</th><th>أيام الحضور</th><th>صافي المرتب</th><th>التفاصيل</th></tr></thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== CASH ========== -->
+        <div id="cash" class="tab-content">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-wallet"></i> إدارة العهدة</div>
+                <div class="card-body">
+                    <div class="cash-summary">
+                        <div class="cash-summary-item"><span class="cash-summary-label">الرصيد الحالي:</span><span class="cash-summary-value" id="currentCashBalance">0 ج.م</span></div>
+                        <div class="cash-summary-item"><span class="cash-summary-label">إجمالي الإيداعات:</span><span class="cash-summary-value" id="totalDeposits">0 ج.م</span></div>
+                        <div class="cash-summary-item"><span class="cash-summary-label">إجمالي المصروفات:</span><span class="cash-summary-value" id="totalWithdrawals">0 ج.م</span></div>
+                    </div>
+
+                    <div class="cash-tabs">
+                        <div class="cash-tab active" data-tab="deposit">إيداع</div>
+                        <div class="cash-tab" data-tab="withdrawal">صرف</div>
+                    </div>
+
+                    <div id="deposit" class="cash-tab-content active">
+                        <form id="cashDepositForm">
+                            <div class="form-group"><label><i class="fas fa-building"></i> المحطة (اختياري)</label><select id="cashDepositStation"><option value="">اختر المحطة (اختياري)</option></select></div>
+                            <div class="form-group"><label><i class="fas fa-user"></i> المسؤول</label><select id="cashDepositSupervisor" required><option value="">اختر المسؤول</option></select></div>
+                            <div class="form-group"><label><i class="fas fa-money-bill"></i> المبلغ (جنيه مصري)</label><input type="number" id="cashDepositAmount" required placeholder="أدخل المبلغ" min="1"><div class="validation-error" id="cashDepositAmountError">يرجى إدخال مبلغ صحيح</div></div>
+                            <div class="form-group"><label><i class="fas fa-calendar"></i> التاريخ</label><input type="date" id="cashDepositDate" required></div>
+                            <div class="form-group"><label><i class="fas fa-tag"></i> سبب الإيداع</label><input type="text" id="cashDepositReason" required placeholder="أدخل سبب الإيداع"></div>
+                            <div class="form-group"><label><i class="fas fa-sticky-note"></i> ملاحظات (اختياري)</label><textarea id="cashDepositNotes" rows="3" placeholder="أدخل ملاحظات"></textarea></div>
+                            <button type="submit" class="btn-cash"><span id="cashDepositSubmitText"><i class="fas fa-plus-circle"></i> تسجيل إيداع</span></button>
+                        </form>
+                    </div>
+
+                    <div id="withdrawal" class="cash-tab-content">
+                        <form id="cashWithdrawalForm">
+                            <div class="form-group"><label><i class="fas fa-building"></i> المحطة (اختياري)</label><select id="cashWithdrawalStation"><option value="">اختر المحطة (اختياري)</option></select></div>
+                            <div class="form-group"><label><i class="fas fa-user"></i> المسؤول</label><select id="cashWithdrawalSupervisor" required><option value="">اختر المسؤول</option></select></div>
+                            <div class="form-group"><label><i class="fas fa-money-bill"></i> المبلغ (جنيه مصري)</label><input type="number" id="cashWithdrawalAmount" required placeholder="أدخل المبلغ" min="1"><div class="validation-error" id="cashWithdrawalAmountError">يرجى إدخال مبلغ صحيح</div></div>
+                            <div class="form-group"><label><i class="fas fa-calendar"></i> التاريخ</label><input type="date" id="cashWithdrawalDate" required></div>
+                            <div class="form-group"><label><i class="fas fa-tag"></i> سبب الصرف</label><input type="text" id="cashWithdrawalReason" required placeholder="أدخل سبب الصرف"></div>
+                            <div class="form-group"><label><i class="fas fa-user"></i> المستلم</label><input type="text" id="cashWithdrawalRecipient" required placeholder="أدخل اسم المستلم"></div>
+                            <div class="form-group"><label><i class="fas fa-sticky-note"></i> ملاحظات (اختياري)</label><textarea id="cashWithdrawalNotes" rows="3" placeholder="أدخل ملاحظات"></textarea></div>
+                            <div class="alert alert-warning"><i class="fas fa-exclamation-triangle"></i> يمكنك الصرف حتى لو كان الرصيد غير كافٍ - سيظهر الرصيد بالسالب</div>
+                            <button type="submit" class="btn-warning"><span id="cashWithdrawalSubmitText"><i class="fas fa-minus-circle"></i> تسجيل صرف</span></button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><i class="fas fa-history"></i> سجل حركات العهدة<button class="btn-secondary" id="exportCashTransactions" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body">
+                    <div class="filter-section">
+                        <div class="filter-with-button">
+                            <div class="form-group"><label><i class="fas fa-filter"></i> فلترة حسب التاريخ</label><input type="date" id="filterCashDate"></div>
+                            <button class="btn-secondary" id="filterCashBtn"><i class="fas fa-search"></i> بحث</button>
+                        </div>
+                        <div class="form-group" style="margin-top:10px;"><label><i class="fas fa-tag"></i> نوع الحركة</label><select id="filterCashType"><option value="">جميع الحركات</option><option value="إيداع">إيداع</option><option value="صرف">صرف</option></select></div>
+                        <div class="form-group" style="margin-top:10px;"><label><i class="fas fa-user"></i> المسؤول</label><select id="filterCashSupervisor"><option value="">جميع المسؤولين</option></select></div>
+                    </div>
+                    <div id="cashTransactionsList" class="empty-state">لا توجد حركات للعهدة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== FAULTS ========== -->
+        <div id="faults" class="tab-content">
+            <div class="card">
+                <div class="card-header">تسجيل عطل جديد</div>
+                <div class="card-body">
+                    <form id="faultForm">
+                        <div class="form-group"><label for="faultStation">اختر المحطة</label><select id="faultStation" required><option value="">اختر المحطة</option></select></div>
+                        <div class="form-group"><label for="faultSupervisor">المسؤول عن التسجيل</label><select id="faultSupervisor" required><option value="">اختر المسؤول</option></select></div>
+                        <div class="form-group"><label for="faultTitle">عنوان العطل</label><input type="text" id="faultTitle" required placeholder="أدخل عنوان العطل"></div>
+                        <div class="form-group"><label for="faultDescription">تفاصيل العطل</label><textarea id="faultDescription" rows="4" required placeholder="أدخل تفاصيل العطل"></textarea></div>
+                        <div class="form-group"><label for="faultDate">تاريخ العطل</label><input type="date" id="faultDate" required></div>
+                        <div class="form-group"><label for="faultStatus">حالة العطل</label><select id="faultStatus" required><option value="pending">لم يتم الإصلاح</option><option value="in-progress">جاري الإصلاح</option><option value="fixed">تم الإصلاح</option></select></div>
+                        <button type="submit" class="btn-success"><span id="faultSubmitText">تسجيل العطل</span></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">سجل الأعطال<button class="btn-secondary" id="exportFaults" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body">
+                    <div class="filter-section">
+                        <h4>فلترة الأعطال</h4>
+                        <div class="filter-row">
+                            <div class="form-group"><label for="filterFaultStation">اختر المحطة</label><select id="filterFaultStation"><option value="">جميع المحطات</option></select></div>
+                            <div class="form-group"><label for="filterFaultStatus">حالة العطل</label><select id="filterFaultStatus"><option value="">جميع الحالات</option><option value="pending">لم يتم الإصلاح</option><option value="in-progress">جاري الإصلاح</option><option value="fixed">تم الإصلاح</option></select></div>
+                        </div>
+                        <div class="filter-row" style="margin-top:10px;">
+                            <div class="form-group"><label for="filterFaultStartDate">من تاريخ</label><input type="date" id="filterFaultStartDate"></div>
+                            <div class="form-group"><label for="filterFaultEndDate">إلى تاريخ</label><input type="date" id="filterFaultEndDate"></div>
+                            <div class="filter-actions">
+                                <button class="btn-success" id="applyFaultFilter"><i class="fas fa-filter"></i> تطبيق</button>
+                                <button class="btn-secondary" id="resetFaultFilter"><i class="fas fa-redo"></i> إعادة</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div id="faultsList" class="empty-state">لا توجد أعطال مسجلة</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========== STATIONS ========== -->
+        <div id="stations" class="tab-content">
+            <div class="card">
+                <div class="card-header">إضافة محطة جديدة</div>
+                <div class="card-body">
+                    <form id="stationForm">
+                        <div class="form-group"><label for="stationName">اسم المحطة</label><input type="text" id="stationName" required placeholder="أدخل اسم المحطة"></div>
+                        <div class="form-group"><label for="stationType">نوع المحطة</label><select id="stationType" required><option value="">اختر نوع المحطة</option><option value="صرف">صرف صحي</option><option value="مياه">مياه</option><option value="رفع">رفع صرف صحي</option><option value="معالجة">معالجة</option><option value="محطة تحلية">محطة تحلية</option><option value="أخرى">أخرى</option></select></div>
+                        <div class="form-group"><label for="stationGovernorate">المحافظة</label><select id="stationGovernorate" required><option value="">اختر المحافظة</option><option value="القاهرة">القاهرة</option><option value="الجيزة">الجيزة</option><option value="الإسكندرية">الإسكندرية</option><option value="الدقهلية">الدقهلية</option><option value="الشرقية">الشرقية</option><option value="الغربية">الغربية</option><option value="القليوبية">القليوبية</option><option value="المنوفية">المنوفية</option><option value="البحيرة">البحيرة</option><option value="كفر الشيخ">كفر الشيخ</option><option value="دمياط">دمياط</option><option value="بورسعيد">بورسعيد</option><option value="الإسماعيلية">الإسماعيلية</option><option value="السويس">السويس</option><option value="شمال سيناء">شمال سيناء</option><option value="جنوب سيناء">جنوب سيناء</option><option value="بني سويف">بني سويف</option><option value="الفيوم">الفيوم</option><option value="المنيا">المنيا</option><option value="أسيوط">أسيوط</option><option value="سوهاج">سوهاج</option><option value="قنا">قنا</option><option value="الأقصر">الأقصر</option><option value="أسوان">أسوان</option><option value="الوادي الجديد">الوادي الجديد</option><option value="مطروح">مطروح</option><option value="البحر الأحمر">البحر الأحمر</option></select></div>
+                        <div class="form-group"><label for="stationArea">المنطقة</label><input type="text" id="stationArea" required placeholder="أدخل اسم المنطقة"></div>
+                        <div class="form-group"><label for="stationAddress">العنوان بالتفصيل</label><textarea id="stationAddress" rows="3" required placeholder="أدخل العنوان بالتفصيل"></textarea></div>
+                        <button type="submit" class="btn-success"><span id="stationSubmitText">إضافة المحطة</span></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">قائمة المحطات<button class="btn-secondary" id="exportStations" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body"><div id="stationsList" class="empty-state">لا توجد محطات مسجلة</div></div>
+            </div>
+        </div>
+
+        <!-- ========== SUPERVISORS ========== -->
+        <div id="supervisors" class="tab-content">
+            <div class="card">
+                <div class="card-header">إضافة مسؤول جديد</div>
+                <div class="card-body">
+                    <form id="supervisorForm">
+                        <div class="form-group"><label for="supervisorEmployee">اختر الموظف من قاعدة البيانات</label><div id="supervisorEmployeeContainer"></div><select id="supervisorEmployee" style="display:none;"></select></div>
+                        <div class="form-group">
+                            <label for="supervisorPassword">كلمة السر</label>
+                            <div style="display:flex;gap:10px;">
+                                <input type="text" id="supervisorPassword" required placeholder="أدخل كلمة السر للمسؤول" style="flex:1;">
+                                <button type="button" class="btn-secondary" id="generatePasswordBtn" style="width:auto;padding:14px;"><i class="fas fa-key"></i> إنشاء</button>
+                            </div>
+                            <div class="validation-error" id="supervisorPasswordError">كلمة السر مطلوبة</div>
+                        </div>
+                        <div class="form-group"><label for="supervisorActive">حالة المسؤول</label><select id="supervisorActive" required><option value="true">فعال</option><option value="false">غير فعال</option></select></div>
+                        <button type="submit" class="btn-success"><span id="supervisorSubmitText">إضافة المسؤول</span></button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">قائمة المسؤولين<button class="btn-secondary" id="exportSupervisors" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
+                <div class="card-body"><div id="supervisorsList" class="empty-state">لا يوجد مسؤولين مسجلين</div></div>
+            </div>
+        </div>
+
+        <!-- ========== BACKUP ========== -->
+        <div id="backup" class="tab-content">
+            <div class="card">
+                <div class="card-header">النسخ الاحتياطي للبيانات</div>
+                <div class="card-body">
+                    <p style="color:var(--text-secondary);margin-bottom:10px;">يمكنك من خلال هذه الصفحة إنشاء نسخة احتياطية من جميع بيانات التطبيق واستعادتها عند الحاجة.</p>
+
+                    <div class="backup-section">
+                        <h3 style="color:var(--text-heading);margin-bottom:8px;">تحميل نسخة احتياطية</h3>
+                        <p style="color:var(--text-secondary);margin-bottom:10px;">قم بتحميل نسخة احتياطية من جميع بيانات التطبيق.</p>
+                        <button class="btn-success" id="downloadBackupBtn"><i class="fas fa-download"></i> تحميل النسخة الاحتياطية</button>
+                    </div>
+
+                    <div class="backup-section">
+                        <h3 style="color:var(--text-heading);margin-bottom:8px;">استعادة نسخة احتياطية</h3>
+                        <p style="color:var(--text-secondary);margin-bottom:10px;">قم برفع نسخة احتياطية سابقة لاستعادة جميع بيانات التطبيق.</p>
+                        <div class="form-group"><label for="backupFile">اختر ملف النسخة الاحتياطية</label><input type="file" id="backupFile" accept=".json"></div>
+                        <button class="btn-warning" id="restoreBackupBtn"><i class="fas fa-upload"></i> استعادة النسخة الاحتياطية</button>
+                    </div>
+
+                    <div class="backup-section">
+                        <h3 style="color:var(--danger);margin-bottom:8px;">حذف جميع البيانات</h3>
+                        <p style="color:var(--text-secondary);margin-bottom:10px;">تحذير: هذا الإجراء سيقوم بحذف جميع البيانات ولا يمكن التراجع عنه.</p>
+                        <button class="btn-danger" id="deleteAllDataBtn"><i class="fas fa-trash"></i> حذف جميع البيانات</button>
+                    </div>
+
+                    <div class="backup-section">
+                        <h3 style="color:var(--text-heading);margin-bottom:8px;">حذف البيانات بشكل انتقائي</h3>
+                        <p style="color:var(--text-secondary);margin-bottom:10px;">يمكنك هنا حذف جزء محدد من البيانات لفترة زمنية معينة.</p>
+                        <div class="form-group"><label for="selectiveDataType">اختر نوع البيانات المراد حذفها</label><select id="selectiveDataType" required><option value="attendance">سجلات الحضور</option><option value="financials">الحركات المالية</option><option value="loans">طلبات السلف</option><option value="cashTransactions">حركات العهدة</option><option value="faults">سجل الأعطال</option></select></div>
+                        <div class="filter-row">
+                            <div class="form-group"><label for="selectiveStartDate">من تاريخ</label><input type="date" id="selectiveStartDate" required></div>
+                            <div class="form-group"><label for="selectiveEndDate">إلى تاريخ</label><input type="date" id="selectiveEndDate" required></div>
+                        </div>
+                        <button class="btn-danger" id="deleteSelectiveDataBtn" style="margin-top:10px;"><i class="fas fa-trash-alt"></i> حذف البيانات المحددة</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- ======================== BOTTOM NAV ======================== -->
+    <nav class="bottom-nav">
+        <a href="#" class="nav-item active" data-target="dashboard">
+            <div class="nav-icon"><i class="fas fa-home"></i></div>
+            <div class="nav-text">الرئيسية</div>
+        </a>
+        <a href="#" class="nav-item" data-target="employees">
+            <div class="nav-icon"><i class="fas fa-users"></i></div>
+            <div class="nav-text">الموظفين</div>
+        </a>
+        <a href="#" class="nav-item-attendance" data-target="attendance">
+            <div class="nav-icon"><i class="fas fa-user-check"></i></div>
+            <div class="nav-text">تسجيل الحضور</div>
+        </a>
+        <a href="#" class="nav-item" data-target="loans">
+            <div class="nav-icon"><i class="fas fa-hand-holding-heart"></i></div>
+            <div class="nav-text">السلف</div>
+        </a>
+        <a href="#" class="nav-item" data-target="faults">
+            <div class="nav-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="nav-text">الأعطال</div>
+        </a>
+    </nav>
+
+</div>
+
+<script src="app.js"></script>
+</body>
+</html>
