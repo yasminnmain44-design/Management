@@ -28,7 +28,7 @@ const database = firebase.database();
 // ======================== APP STATE ========================
 let employees = [], attendance = [], leaves = [], financials = [];
 let employeeDatabase = [], cashTransactions = [], stations = [], supervisors = [];
-let faults = [], loans = [];
+let faults = [], loans = [], systemAdmins = [];
 let currentReportData = null;
 let isConnected = false;
 let connectionRetryCount = 0;
@@ -36,6 +36,7 @@ const maxRetries = 3;
 let currentLoanFilter = 'pending';
 let quickSearchTimeout = null;
 let searchableInstances = [];
+let currentAdminUser = null; // Track logged in admin user
 
 const arabicWords = [
     'قمة','بحر','نور','سحر','أمل','نجاح','تميز','ابداع','تفوق','ريادة',
@@ -50,6 +51,262 @@ const menuBtn = document.getElementById('menuBtn');
 const closeMenuBtn = document.getElementById('closeMenu');
 const exportBtn = document.getElementById('exportBtn');
 const connectionStatus = document.getElementById('connectionStatus');
+
+// ======================== AUTHENTICATION SYSTEM ========================
+function checkAdminSession() {
+    const savedSession = localStorage.getItem('systemAdminSession');
+    if (savedSession) {
+        try {
+            const session = JSON.parse(savedSession);
+            if (session.expiry && new Date(session.expiry) > new Date()) {
+                currentAdminUser = session.user;
+                return true;
+            } else {
+                localStorage.removeItem('systemAdminSession');
+            }
+        } catch(e) {}
+    }
+    return false;
+}
+
+function saveAdminSession(user) {
+    const session = {
+        user: user,
+        expiry: new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString()
+    };
+    localStorage.setItem('systemAdminSession', JSON.stringify(session));
+    currentAdminUser = user;
+}
+
+function showLoginScreen() {
+    document.getElementById('loginScreen').style.display = 'flex';
+    document.getElementById('appContainer').classList.remove('visible');
+    document.getElementById('loginError').style.display = 'none';
+    document.getElementById('loginUsername').value = '';
+    document.getElementById('loginPassword').value = '';
+}
+
+function hideLoginScreen() {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('appContainer').classList.add('visible');
+}
+
+function togglePasswordVisibility(inputId, iconElement) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+        iconElement.classList.remove('fa-eye-slash');
+        iconElement.classList.add('fa-eye');
+    } else {
+        input.type = 'password';
+        iconElement.classList.remove('fa-eye');
+        iconElement.classList.add('fa-eye-slash');
+    }
+}
+
+function loginUser() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
+    const errorDiv = document.getElementById('loginError');
+    
+    if (!username || !password) {
+        errorDiv.textContent = 'يرجى إدخال اسم المستخدم وكلمة السر';
+        errorDiv.style.display = 'block';
+        return;
+    }
+    
+    const admin = systemAdmins.find(a => a.username === username && a.password === password && a.status === 'active');
+    
+    if (admin) {
+        saveAdminSession(admin);
+        hideLoginScreen();
+        updateUIByUserRole();
+        loadAllData();
+        showToast(`مرحباً ${admin.fullName || admin.username}`, 'success');
+    } else {
+        errorDiv.textContent = 'اسم المستخدم أو كلمة السر غير صحيحة';
+        errorDiv.style.display = 'block';
+    }
+}
+
+function logoutAdmin() {
+    currentAdminUser = null;
+    localStorage.removeItem('systemAdminSession');
+    showLoginScreen();
+    showToast('تم تسجيل الخروج بنجاح', 'info');
+}
+
+function updateUIByUserRole() {
+    const userInfoDisplay = document.getElementById('userInfoDisplay');
+    const isSuper = isSuperAdmin();
+    
+    if (userInfoDisplay) {
+        const roleText = isSuper ? 'مدير عام' : 'مدير';
+        userInfoDisplay.innerHTML = `<i class="fas fa-user-shield"></i> ${currentAdminUser?.username} (${roleText})`;
+    }
+    
+    // Show/hide System Admins menu based on role (only super admin can access)
+    const systemAdminsMenuItem = document.getElementById('systemAdminsMenuItem');
+    const systemAdminsQuickAction = document.getElementById('systemAdminsQuickAction');
+    
+    if (systemAdminsMenuItem) {
+        systemAdminsMenuItem.style.display = isSuper ? 'block' : 'none';
+    }
+    if (systemAdminsQuickAction) {
+        systemAdminsQuickAction.style.display = isSuper ? 'flex' : 'none';
+    }
+}
+
+function isSuperAdmin() {
+    return currentAdminUser && currentAdminUser.role === 'super_admin';
+}
+
+function showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast-notification toast-${type}`;
+    toast.innerHTML = `<i class="fas ${type === 'success' ? 'fa-check-circle' : type === 'error' ? 'fa-exclamation-circle' : 'fa-info-circle'}"></i> ${message}`;
+    document.body.appendChild(toast);
+    setTimeout(() => {
+        toast.style.animation = 'fadeOutDown 0.3s ease';
+        setTimeout(() => toast.remove(), 300);
+    }, 3000);
+}
+
+// ======================== SYSTEM ADMIN FUNCTIONS ========================
+function addSystemAdmin() {
+    if (!isSuperAdmin()) {
+        showToast('غير مصرح لك بإضافة مسؤولي إدارة', 'error');
+        return;
+    }
+    
+    const username = document.getElementById('adminUsernameInput').value.trim();
+    const password = document.getElementById('adminPasswordInput').value.trim();
+    const fullName = document.getElementById('adminFullName').value.trim();
+    const role = document.getElementById('adminRole').value;
+    const status = document.getElementById('adminStatus').value;
+    
+    if (!username) {
+        document.getElementById('adminUsernameError').style.display = 'block';
+        return;
+    }
+    if (!password) {
+        document.getElementById('adminPasswordError').style.display = 'block';
+        return;
+    }
+    
+    if (systemAdmins.some(a => a.username === username)) {
+        document.getElementById('adminUsernameError').style.display = 'block';
+        return;
+    }
+    
+    document.getElementById('adminUsernameError').style.display = 'none';
+    document.getElementById('adminPasswordError').style.display = 'none';
+    
+    addData('systemAdmins', { username, password, fullName, role, status, createdAt: new Date().toISOString() })
+        .then(() => {
+            document.getElementById('systemAdminForm').reset();
+            showToast('تم إضافة مسؤول الإدارة بنجاح', 'success');
+            loadAllData();
+        })
+        .catch(() => showToast('حدث خطأ أثناء إضافة مسؤول الإدارة', 'error'));
+}
+
+function displaySystemAdminsList() {
+    const container = document.getElementById('systemAdminsList');
+    if (!container) return;
+    container.innerHTML = '';
+    
+    if (systemAdmins.length === 0) {
+        container.innerHTML = '<div class="empty-state">لا يوجد مسؤولين إدارة مسجلين</div>';
+        return;
+    }
+    
+    systemAdmins.forEach(admin => {
+        const item = document.createElement('div');
+        item.className = 'list-item';
+        const roleClass = admin.role === 'super_admin' ? 'status-active' : 'status-inactive';
+        const statusClass = admin.status === 'active' ? 'status-active' : 'status-inactive';
+        const statusText = admin.status === 'active' ? 'نشط' : 'غير نشط';
+        const roleText = admin.role === 'super_admin' ? 'مدير عام' : 'مدير عادي';
+        
+        item.innerHTML = `
+            <div class="item-info">
+                <div class="item-title">${admin.username}</div>
+                <div class="item-subtitle">
+                    <span>${admin.fullName || 'غير محدد'}</span>
+                    <span class="${roleClass}">${roleText}</span>
+                    <span class="${statusClass}">${statusText}</span>
+                </div>
+            </div>
+            <div class="item-actions">
+                ${isSuperAdmin() ? `<button class="btn-edit" onclick="editSystemAdmin('${admin.id}')">تعديل</button>` : ''}
+                ${isSuperAdmin() && admin.username !== currentAdminUser?.username ? `<button class="btn-delete" onclick="deleteSystemAdmin('${admin.id}')">حذف</button>` : ''}
+            </div>
+        `;
+        container.appendChild(item);
+    });
+}
+
+function editSystemAdmin(id) {
+    if (!isSuperAdmin()) {
+        showToast('غير مصرح لك بتعديل مسؤولي الإدارة', 'error');
+        return;
+    }
+    
+    const admin = systemAdmins.find(a => a.id === id);
+    if (!admin) return;
+    
+    document.getElementById('adminUsernameInput').value = admin.username;
+    document.getElementById('adminPasswordInput').value = admin.password;
+    document.getElementById('adminFullName').value = admin.fullName || '';
+    document.getElementById('adminRole').value = admin.role;
+    document.getElementById('adminStatus').value = admin.status;
+    
+    deleteData('systemAdmins', id).then(() => {
+        showToast('يمكنك الآن تعديل بيانات مسؤول الإدارة', 'info');
+    }).catch(() => showToast('حدث خطأ', 'error'));
+}
+
+function deleteSystemAdmin(id) {
+    if (!isSuperAdmin()) {
+        showToast('غير مصرح لك بحذف مسؤولي الإدارة', 'error');
+        return;
+    }
+    
+    const admin = systemAdmins.find(a => a.id === id);
+    if (admin && admin.username === currentAdminUser?.username) {
+        showToast('لا يمكنك حذف حسابك الحالي', 'error');
+        return;
+    }
+    
+    if (!confirm('هل أنت متأكد من حذف هذا المسؤول؟')) return;
+    
+    deleteData('systemAdmins', id).then(() => {
+        showToast('تم حذف مسؤول الإدارة بنجاح', 'success');
+        loadAllData();
+    }).catch(() => showToast('حدث خطأ أثناء الحذف', 'error'));
+}
+
+// Create default super admin if none exists
+function createDefaultSuperAdmin() {
+    // Default credentials - you know these, not displayed anywhere
+    const defaultAdmin = {
+        username: "admin",
+        password: "Admin@123",
+        fullName: "المدير العام",
+        role: "super_admin",
+        status: "active",
+        createdAt: new Date().toISOString()
+    };
+    
+    // Check if any admin exists
+    if (systemAdmins.length === 0) {
+        addData('systemAdmins', defaultAdmin).then(() => {
+            console.log('Default super admin created');
+            loadAllData();
+        }).catch(() => console.log('Default admin already exists or error creating'));
+    }
+}
 
 // ======================== SEARCHABLE SELECT ========================
 function enhanceSelectToSearchable(selectId, containerId, placeholder = "ابحث عن موظف...") {
@@ -163,8 +420,11 @@ function loadAllData() {
     Promise.all([
         loadData('employees'), loadData('attendance'), loadData('leaves'), loadData('financials'),
         loadData('employeeDatabase'), loadData('cashTransactions'), loadData('stations'),
-        loadData('supervisors'), loadData('faults'), loadData('loans')
+        loadData('supervisors'), loadData('faults'), loadData('loans'), loadData('systemAdmins')
     ]).then(() => {
+        // Create default super admin if needed
+        createDefaultSuperAdmin();
+        
         showLoadingState(false);
         updateEmployeesDropdowns(); updateDatabaseEmployeesDropdown(); updateStationDropdowns();
         updateSupervisorDropdowns(); updateCashSupervisorDropdowns(); updateLoanFilterDropdowns();
@@ -173,7 +433,17 @@ function loadAllData() {
         displayFinancialsList(); displayCashTransactions(); updateCashSummary();
         displayStationsList(); displaySupervisorsList(); displayFaultsList();
         displayRecentCashTransactions(); displayLoansList(); updateStationsBar();
+        displaySystemAdminsList();
         initSearchableSelects();
+        
+        // Check if user is logged in
+        if (!checkAdminSession()) {
+            showLoginScreen();
+        } else {
+            hideLoginScreen();
+            updateUIByUserRole();
+        }
+        
         connectionStatus.textContent = "✓ تم تحميل البيانات بنجاح من السحابة";
         connectionStatus.className = "connection-status connection-online";
         connectionStatus.style.display = "block";
@@ -193,7 +463,7 @@ function loadData(dataType) {
         database.ref(dataType).once('value').then((snapshot) => {
             const data = snapshot.val();
             const dataArray = data ? Object.keys(data).map(key => ({ id: key, ...data[key] })) : [];
-            const map = { employees, attendance, leaves, financials, employeeDatabase, cashTransactions, stations, supervisors, faults, loans };
+            const map = { employees, attendance, leaves, financials, employeeDatabase, cashTransactions, stations, supervisors, faults, loans, systemAdmins };
             if (dataType === 'employees') employees = dataArray;
             else if (dataType === 'attendance') attendance = dataArray;
             else if (dataType === 'leaves') leaves = dataArray;
@@ -204,6 +474,7 @@ function loadData(dataType) {
             else if (dataType === 'supervisors') supervisors = dataArray;
             else if (dataType === 'faults') faults = dataArray;
             else if (dataType === 'loans') loans = dataArray;
+            else if (dataType === 'systemAdmins') systemAdmins = dataArray;
             resolve();
         }).catch(reject);
     });
@@ -237,6 +508,7 @@ function addData(dataType, newItem) {
             else if (dataType === 'supervisors') supervisors.push(itemWithId);
             else if (dataType === 'faults') faults.push(itemWithId);
             else if (dataType === 'loans') loans.push(itemWithId);
+            else if (dataType === 'systemAdmins') systemAdmins.push(itemWithId);
             resolve(itemWithId);
         }).catch(reject);
     });
@@ -245,7 +517,7 @@ function addData(dataType, newItem) {
 function updateData(dataType, id, updatedData) {
     return new Promise((resolve, reject) => {
         database.ref(`${dataType}/${id}`).update(updatedData).then(() => {
-            const arrays = { employees, attendance, leaves, financials, employeeDatabase, cashTransactions, stations, supervisors, faults, loans };
+            const arrays = { employees, attendance, leaves, financials, employeeDatabase, cashTransactions, stations, supervisors, faults, loans, systemAdmins };
             const arr = arrays[dataType];
             if (arr) { const idx = arr.findIndex(i => i.id === id); if (idx !== -1) arr[idx] = { ...arr[idx], ...updatedData }; }
             resolve();
@@ -266,6 +538,7 @@ function deleteData(dataType, id) {
             else if (dataType === 'supervisors') supervisors = supervisors.filter(i => i.id !== id);
             else if (dataType === 'faults') faults = faults.filter(i => i.id !== id);
             else if (dataType === 'loans') loans = loans.filter(i => i.id !== id);
+            else if (dataType === 'systemAdmins') systemAdmins = systemAdmins.filter(i => i.id !== id);
             resolve();
         }).catch(reject);
     });
@@ -304,6 +577,7 @@ function showLoadingState(show) {
                 else if (button.closest('#faultForm')) textSpan.textContent = 'تسجيل العطل';
                 else if (button.closest('#stationForm')) textSpan.textContent = 'إضافة المحطة';
                 else if (button.closest('#supervisorForm')) textSpan.textContent = 'إضافة المسؤول';
+                else if (button.closest('#systemAdminForm')) textSpan.innerHTML = '<i class="fas fa-user-plus"></i> إضافة مسؤول إدارة';
                 button.disabled = false;
             }
         });
@@ -330,7 +604,7 @@ function showPage(pageId) {
         'dashboard':'لوحة التحكم','employees':'إدارة الموظفين','employee-database':'قاعدة بيانات الموظفين',
         'attendance':'الحضور والغياب','employee-records':'سجل الموظفين','financial':'السلف والمكافآت',
         'loans':'طلبات السلف','reports':'تقارير المرتبات','cash':'إدارة العهدة','faults':'سجل الأعطال',
-        'stations':'إدارة المحطات','supervisors':'إدارة المسؤولين','backup':'النسخ الاحتياطي'
+        'stations':'إدارة المحطات','supervisors':'إدارة المسؤولين','system-admins':'مسؤولي الإدارة','backup':'النسخ الاحتياطي'
     };
     document.getElementById('pageTitle').textContent = titles[pageId] || pageId;
     if (pageId === 'dashboard') { updateDashboard(); displayRecentCashTransactions(); displayRecentLoans(); }
@@ -345,6 +619,7 @@ function showPage(pageId) {
     else if (pageId === 'faults') displayFaultsList();
     else if (pageId === 'stations') displayStationsList();
     else if (pageId === 'supervisors') { displaySupervisorsList(); updateSupervisorEmployeesDropdown(); }
+    else if (pageId === 'system-admins') displaySystemAdminsList();
 }
 
 function updateBottomNavFromSidebar(target) {
@@ -1358,7 +1633,7 @@ function addSelectedContacts() {
 
 // ======================== BACKUP ========================
 function downloadBackup() {
-    const data = JSON.stringify({ employees, attendance, leaves, financials, employeeDatabase, cashTransactions, stations, supervisors, faults, loans, backupDate: new Date().toISOString() }, null, 2);
+    const data = JSON.stringify({ employees, attendance, leaves, financials, employeeDatabase, cashTransactions, stations, supervisors, faults, loans, systemAdmins, backupDate: new Date().toISOString() }, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a'); a.href = url; a.download = `backup_${new Date().toISOString().split('T')[0]}.json`;
@@ -1375,7 +1650,7 @@ function restoreBackup() {
             if (!data.employees || !data.attendance) { alert('ملف غير صالح'); return; }
             if (!confirm('هل أنت متأكد من استعادة النسخة الاحتياطية؟ سيتم استبدال جميع البيانات الحالية.')) return;
             showLoadingState(true);
-            Promise.all([saveData('employees', data.employees), saveData('attendance', data.attendance), saveData('leaves', data.leaves || []), saveData('financials', data.financials || []), saveData('employeeDatabase', data.employeeDatabase || []), saveData('cashTransactions', data.cashTransactions || []), saveData('stations', data.stations || []), saveData('supervisors', data.supervisors || []), saveData('faults', data.faults || []), saveData('loans', data.loans || [])])
+            Promise.all([saveData('employees', data.employees), saveData('attendance', data.attendance), saveData('leaves', data.leaves || []), saveData('financials', data.financials || []), saveData('employeeDatabase', data.employeeDatabase || []), saveData('cashTransactions', data.cashTransactions || []), saveData('stations', data.stations || []), saveData('supervisors', data.supervisors || []), saveData('faults', data.faults || []), saveData('loans', data.loans || []), saveData('systemAdmins', data.systemAdmins || [])])
                 .then(() => { showLoadingState(false); alert('تم استعادة النسخة الاحتياطية بنجاح'); showPage('dashboard'); loadAllData(); })
                 .catch(() => { showLoadingState(false); alert('حدث خطأ أثناء الاستعادة'); });
         } catch { alert('ملف غير صالح'); }
@@ -1386,7 +1661,7 @@ function restoreBackup() {
 function deleteAllData() {
     if (!confirm('هل أنت متأكد من حذف جميع البيانات؟ لا يمكن التراجع عن هذا الإجراء.')) return;
     showLoadingState(true);
-    Promise.all(['employees','attendance','leaves','financials','employeeDatabase','cashTransactions','stations','supervisors','faults','loans'].map(t => saveData(t, [])))
+    Promise.all(['employees','attendance','leaves','financials','employeeDatabase','cashTransactions','stations','supervisors','faults','loans','systemAdmins'].map(t => saveData(t, [])))
         .then(() => { showLoadingState(false); alert('تم حذف جميع البيانات'); showPage('dashboard'); loadAllData(); })
         .catch(() => { showLoadingState(false); alert('حدث خطأ'); });
 }
@@ -1421,7 +1696,7 @@ function exportToExcel(data, name) {
     } catch { alert('حدث خطأ أثناء التصدير'); }
 }
 
-function exportAllData() { exportToExcel({ الموظفون: employees, الحضور: attendance, الحركات_المالية: financials, طلبات_السلف: loans, حركات_العهدة: cashTransactions, المحطات: stations, المسؤولون: supervisors, الأعطال: faults }, 'جميع_البيانات'); }
+function exportAllData() { exportToExcel({ الموظفون: employees, الحضور: attendance, الحركات_المالية: financials, طلبات_السلف: loans, حركات_العهدة: cashTransactions, المحطات: stations, المسؤولون: supervisors, الأعطال: faults, مسؤولي_الإدارة: systemAdmins }, 'جميع_البيانات'); }
 function exportEmployeesToExcel() { exportToExcel(employees.map(e => ({ 'اسم الموظف': e.name, 'الوظيفة': e.job, 'رقم الهاتف': e.phone, 'الراتب': e.salary, 'أيام العمل': e.workDays, 'الحالة': e.active ? 'فعال' : 'غير فعال' })), 'بيانات_الموظفين'); }
 function exportEmployeeDatabaseToExcel() { exportToExcel(employeeDatabase.map(e => ({ 'اسم الموظف': e.name, 'رقم الهاتف': e.phone, 'رقم الواتساب': e.whatsapp || e.phone, 'العنوان': e.address || '', 'الحالة': e.active ? 'مفعل' : 'غير مفعل' })), 'قاعدة_بيانات_الموظفين'); }
 function exportAttendanceToExcel() {
@@ -1456,6 +1731,7 @@ function exportFaultsToExcel() {
 }
 function exportStationsToExcel() { exportToExcel(stations.map(s => ({ 'الاسم': s.name, 'النوع': s.type, 'المحافظة': s.governorate, 'المنطقة': s.area, 'العنوان': s.address })), 'قائمة_المحطات'); }
 function exportSupervisorsToExcel() { exportToExcel(supervisors.map(s => ({ 'الاسم': s.employeeName, 'الهاتف': s.employeePhone, 'كلمة السر': s.password, 'الحالة': s.active ? 'فعال' : 'غير فعال' })), 'قائمة_المسؤولين'); }
+function exportSystemAdminsToExcel() { exportToExcel(systemAdmins.map(a => ({ 'اسم المستخدم': a.username, 'الاسم الكامل': a.fullName || '', 'الصلاحية': a.role === 'super_admin' ? 'مدير عام' : 'مدير عادي', 'الحالة': a.status === 'active' ? 'نشط' : 'غير نشط' })), 'قائمة_مسؤولي_الإدارة'); }
 
 function validateAmount(amount, errorId) {
     const el = document.getElementById(errorId);
@@ -1480,6 +1756,9 @@ function setupEventListeners() {
     document.getElementById('exportFaults').addEventListener('click', exportFaultsToExcel);
     document.getElementById('exportStations').addEventListener('click', exportStationsToExcel);
     document.getElementById('exportSupervisors').addEventListener('click', exportSupervisorsToExcel);
+
+    const exportSystemAdminsBtn = document.getElementById('exportSystemAdmins');
+    if (exportSystemAdminsBtn) exportSystemAdminsBtn.addEventListener('click', exportSystemAdminsToExcel);
 
     document.querySelectorAll('.nav-item, .nav-item-attendance, .quick-action, .see-all, .menu-link').forEach(el => {
         el.addEventListener('click', function(e) {
@@ -1514,6 +1793,7 @@ function setupEventListeners() {
     document.getElementById('faultForm').addEventListener('submit', e => { e.preventDefault(); addFault(); });
     document.getElementById('stationForm').addEventListener('submit', e => { e.preventDefault(); addStation(); });
     document.getElementById('supervisorForm').addEventListener('submit', e => { e.preventDefault(); addSupervisor(); });
+    document.getElementById('systemAdminForm').addEventListener('submit', e => { e.preventDefault(); addSystemAdmin(); });
     document.getElementById('cashDepositForm').addEventListener('submit', e => { e.preventDefault(); addCashDeposit(); });
     document.getElementById('cashWithdrawalForm').addEventListener('submit', e => { e.preventDefault(); addCashWithdrawal(); });
 
@@ -1556,8 +1836,9 @@ function setupEventListeners() {
     document.getElementById('restoreBackupBtn').addEventListener('click', restoreBackup);
     document.getElementById('deleteAllDataBtn').addEventListener('click', deleteAllData);
     document.getElementById('deleteSelectiveDataBtn').addEventListener('click', deleteSelectiveData);
-    document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); if (confirm('هل تريد تسجيل الخروج؟')) alert('تم تسجيل الخروج بنجاح'); });
+    document.getElementById('logoutBtn').addEventListener('click', e => { e.preventDefault(); if (confirm('هل تريد تسجيل الخروج؟')) logoutAdmin(); });
     document.getElementById('generatePasswordBtn').addEventListener('click', () => { document.getElementById('supervisorPassword').value = generateRandomPassword(); });
+    document.getElementById('generateAdminPasswordBtn').addEventListener('click', () => { document.getElementById('adminPasswordInput').value = generateRandomPassword(); });
     document.getElementById('filterLoanStartDate').addEventListener('change', applyLoanFilters);
     document.getElementById('filterLoanEndDate').addEventListener('change', applyLoanFilters);
     document.getElementById('filterLoanStation').addEventListener('change', applyLoanFilters);
@@ -1599,6 +1880,10 @@ window.openLoanModal = openLoanModal;
 window.closeLoanModal = closeLoanModal;
 window.updateLoanStatus = updateLoanStatus;
 window.sendLoanWhatsApp = sendLoanWhatsApp;
+window.editSystemAdmin = editSystemAdmin;
+window.deleteSystemAdmin = deleteSystemAdmin;
+window.togglePasswordVisibility = togglePasswordVisibility;
+window.loginUser = loginUser;
 
 // ======================== INIT ========================
 document.addEventListener('DOMContentLoaded', function() {
@@ -1615,6 +1900,11 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('filterLoanEndDate').value = today;
     document.getElementById('employeeForm').classList.add('hidden');
     document.getElementById('employeeFormMessage').style.display = 'block';
+    
+    // Initially hide app container, show login screen
+    document.getElementById('appContainer').classList.remove('visible');
+    document.getElementById('loginScreen').style.display = 'flex';
+    
     setupEventListeners();
     monitorConnection();
     loadAllData();
