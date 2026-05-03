@@ -11,13 +11,41 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-<div class="app-container">
 
-    <!-- ======================== HEADER ======================== -->
+<!-- ======================== LOGIN SCREEN ======================== -->
+<div id="loginScreen" class="login-wrapper">
+    <div class="login-card">
+        <div class="login-header">
+            <div class="login-icon">
+                <i class="fas fa-chalkboard-user"></i>
+            </div>
+            <h1>مرحباً بك</h1>
+            <p>نظام إدارة الحضور والغياب المتقدم</p>
+        </div>
+        <form id="loginForm" onsubmit="event.preventDefault(); loginUser();">
+            <div class="input-group">
+                <i class="fas fa-user"></i>
+                <input type="text" id="loginUsername" placeholder="اسم المستخدم" required autocomplete="off">
+            </div>
+            <div class="input-group">
+                <i class="fas fa-lock"></i>
+                <input type="password" id="loginPassword" placeholder="كلمة السر" required>
+                <i class="fas fa-eye-slash toggle-password" onclick="togglePasswordVisibility('loginPassword', this)"></i>
+            </div>
+            <button type="submit" class="login-btn">تسجيل الدخول</button>
+            <div id="loginError" class="login-error"></div>
+        </form>
+    </div>
+</div>
+
+<!-- ======================== MAIN APP ======================== -->
+<div id="appContainer" class="app-container">
+
     <header class="app-header">
         <div class="header-top">
             <div class="app-title" id="pageTitle">لوحة التحكم</div>
             <div class="header-actions">
+                <div class="user-info" id="userInfoDisplay"></div>
                 <button class="theme-toggle" id="themeToggle" title="تبديل المظهر">
                     <i class="fas fa-sun icon-sun"></i>
                     <i class="fas fa-moon icon-moon"></i>
@@ -32,7 +60,6 @@
         </div>
     </header>
 
-    <!-- ======================== CONNECTION STATUS ======================== -->
     <div id="connectionStatus" class="connection-status connection-online">
         <i class="fas fa-wifi"></i> متصل بقاعدة البيانات السحابية
     </div>
@@ -136,6 +163,7 @@
             <li class="menu-item"><a href="#" class="menu-link" data-target="faults"><i class="fas fa-exclamation-triangle"></i><span>سجل الأعطال</span></a></li>
             <li class="menu-item"><a href="#" class="menu-link" data-target="stations"><i class="fas fa-building"></i><span>إدارة المحطات</span></a></li>
             <li class="menu-item"><a href="#" class="menu-link" data-target="supervisors"><i class="fas fa-user-tie"></i><span>إدارة المسؤولين</span></a></li>
+            <li class="menu-item" id="systemAdminsMenuItem"><a href="#" class="menu-link" data-target="system-admins"><i class="fas fa-shield-alt"></i><span>مسؤولي الإدارة</span></a></li>
             <li class="menu-item"><a href="#" class="menu-link" data-target="backup"><i class="fas fa-database"></i><span>النسخ الاحتياطي</span></a></li>
             <li class="menu-item"><a href="#" class="menu-link" id="logoutBtn"><i class="fas fa-sign-out-alt"></i><span>تسجيل الخروج</span></a></li>
         </ul>
@@ -198,7 +226,7 @@
                 <div class="quick-action" data-target="employee-records"><i class="fas fa-user-circle"></i><span>سجل الموظفين</span></div>
                 <div class="quick-action" data-target="reports"><i class="fas fa-chart-bar"></i><span>التقارير</span></div>
                 <div class="quick-action" data-target="supervisors"><i class="fas fa-user-tie"></i><span>إدارة المسؤولين</span></div>
-                <div class="quick-action" data-target="backup"><i class="fas fa-database"></i><span>النسخ الاحتياطي</span></div>
+                <div class="quick-action" id="systemAdminsQuickAction" data-target="system-admins"><i class="fas fa-shield-alt"></i><span>مسؤولي الإدارة</span></div>
                 <div class="quick-action" data-target="cash"><i class="fas fa-wallet"></i><span>العهدة</span></div>
                 <div class="quick-action" data-target="loans"><i class="fas fa-hand-holding-heart"></i><span>طلبات السلف</span></div>
             </div>
@@ -454,7 +482,7 @@
 
                     <div class="table-container">
                         <table id="loansTable">
-                            <thead><tr><th>المسؤول</th><th>المحطة</th><th>المبلغ</th><th>السبب</th><th>التاريخ</th><th>وقت التسجيل</th><th>الحالة</th><th>الإجراءات</th></tr></thead>
+                            <thead></tr><th>المسؤول</th><th>المحطة</th><th>المبلغ</th><th>السبب</th><th>التاريخ</th><th>وقت التسجيل</th><th>الحالة</th><th>الإجراءات</th></tr></thead>
                             <tbody id="loansTableBody"></tbody>
                         </table>
                     </div>
@@ -479,7 +507,7 @@
                     <div id="reportSummary" class="report-summary" style="display:none;"><h4 style="color:var(--text-heading);margin-bottom:10px;">ملخص التقرير</h4><div id="reportSummaryContent"></div></div>
                     <div class="table-container">
                         <table id="salaryReportTable">
-                            <thead><tr><th>اسم الموظف</th><th>الوظيفة</th><th>المحطة</th><th>الراتب الأساسي</th><th>أيام الحضور</th><th>صافي المرتب</th><th>التفاصيل</th></tr></thead>
+                            <thead></table><th>اسم الموظف</th><th>الوظيفة</th><th>المحطة</th><th>الراتب الأساسي</th><th>أيام الحضور</th><th>صافي المرتب</th><th>التفاصيل</th></tr></thead>
                             <tbody></tbody>
                         </table>
                     </div>
@@ -633,6 +661,56 @@
             <div class="card">
                 <div class="card-header">قائمة المسؤولين<button class="btn-secondary" id="exportSupervisors" style="padding:8px 12px;width:auto;">تصدير Excel</button></div>
                 <div class="card-body"><div id="supervisorsList" class="empty-state">لا يوجد مسؤولين مسجلين</div></div>
+            </div>
+        </div>
+
+        <!-- ========== SYSTEM ADMINS - NEW PAGE ========== -->
+        <div id="system-admins" class="tab-content">
+            <div class="card">
+                <div class="card-header"><i class="fas fa-shield-alt"></i> إدارة مسؤولي الإدارة</div>
+                <div class="card-body">
+                    <form id="systemAdminForm">
+                        <div class="form-group">
+                            <label for="adminUsernameInput"><i class="fas fa-user"></i> اسم المستخدم</label>
+                            <input type="text" id="adminUsernameInput" required placeholder="أدخل اسم المستخدم">
+                            <div class="validation-error" id="adminUsernameError">اسم المستخدم موجود مسبقاً</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPasswordInput"><i class="fas fa-key"></i> كلمة السر</label>
+                            <div style="display:flex;gap:10px;">
+                                <input type="text" id="adminPasswordInput" required placeholder="أدخل كلمة السر" style="flex:1;">
+                                <button type="button" class="btn-secondary" id="generateAdminPasswordBtn" style="width:auto;padding:14px;"><i class="fas fa-key"></i> إنشاء</button>
+                            </div>
+                            <div class="validation-error" id="adminPasswordError">كلمة السر مطلوبة</div>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminFullName"><i class="fas fa-id-card"></i> الاسم الكامل (اختياري)</label>
+                            <input type="text" id="adminFullName" placeholder="أدخل الاسم الكامل">
+                        </div>
+                        <div class="form-group">
+                            <label for="adminRole"><i class="fas fa-user-tag"></i> صلاحية المسؤول</label>
+                            <select id="adminRole" required>
+                                <option value="admin">مدير عادي</option>
+                                <option value="super_admin">مدير عام</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminStatus"><i class="fas fa-toggle-on"></i> حالة المسؤول</label>
+                            <select id="adminStatus" required>
+                                <option value="active">نشط</option>
+                                <option value="inactive">غير نشط</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="btn-success"><i class="fas fa-user-plus"></i> إضافة مسؤول إدارة</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header"><i class="fas fa-list"></i> قائمة مسؤولي الإدارة</div>
+                <div class="card-body">
+                    <div id="systemAdminsList" class="empty-state">لا يوجد مسؤولين إدارة مسجلين</div>
+                </div>
             </div>
         </div>
 
